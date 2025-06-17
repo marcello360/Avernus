@@ -1,15 +1,57 @@
-const SUPABASE_URL = 'https://your-project.supabase.co';
-const SUPABASE_KEY = 'your-anon-key';
+const SUPABASE_URL = 'https://hhattfmstvpkcsquywpd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhoYXR0Zm1zdHZwa2NzcXV5d3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxODUyOTEsImV4cCI6MjA2NTc2MTI5MX0.oUHaqgRpM8RPiOE-Y_LeGkohdhUCkBvpaNojWJofbZw';
 
-async function fetchHexes() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/Hexes?select=*`, {
+const hexSelect = document.getElementById('hexSelect');
+const weatherSelect = document.getElementById('weatherSelect');
+const watchSelect = document.getElementById('watchSelect');
+const rollButton = document.getElementById('rollButton');
+
+// Fetch Hexes from Supabase
+async function populateHexes() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/Hexes?select=HexName`, {
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': `Bearer ${SUPABASE_KEY}`
     }
   });
-  const data = await res.json();
-  document.getElementById('output').innerText = JSON.stringify(data, null, 2);
+
+  const hexes = await res.json();
+
+  hexes.forEach(hex => {
+    const option = document.createElement('option');
+    option.value = hex.HexName;
+    option.textContent = hex.HexName;
+    hexSelect.appendChild(option);
+  });
 }
 
-fetchHexes();
+// Enable button only when all selects are filled
+function checkSelections() {
+  const weather = weatherSelect.value;
+  const watch = watchSelect.value;
+  const hex = hexSelect.value;
+
+  rollButton.disabled = !(weather && watch && hex);
+}
+
+// Event listeners
+weatherSelect.addEventListener('change', checkSelections);
+watchSelect.addEventListener('change', checkSelections);
+hexSelect.addEventListener('change', checkSelections);
+
+rollButton.addEventListener('click', () => {
+  // Placeholder for logic to come
+  const weather = weatherSelect.value;
+  const watch = watchSelect.value;
+  const hex = hexSelect.value;
+
+  document.getElementById('outputArea').innerHTML = `
+    <h2>Watch Roll Input</h2>
+    <p><strong>Weather:</strong> ${weather}</p>
+    <p><strong>Watch Type:</strong> ${watch}</p>
+    <p><strong>Hex:</strong> ${hex}</p>
+    <p><em>Rolling functionality coming soon...</em></p>
+  `;
+});
+
+populateHexes();
