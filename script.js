@@ -6,9 +6,9 @@ const weatherSelect = document.getElementById('weatherSelect');
 const watchSelect = document.getElementById('watchSelect');
 const rollButton = document.getElementById('rollButton');
 
-// Fetch Hexes from Supabase
-async function populateHexes() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/Hexes?select=HexName`, {
+// Fetch es from Supabase
+async function populatees() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=hexname`, {
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -19,8 +19,8 @@ async function populateHexes() {
 
   hexes.forEach(hex => {
     const option = document.createElement('option');
-    option.value = hex.HexName;
-    option.textContent = hex.HexName;
+    option.value = hex.hexname;
+    option.textContent = hex.hexname;
     hexSelect.appendChild(option);
   });
 }
@@ -49,9 +49,9 @@ rollButton.addEventListener('click', () => {
     <h2>Watch Roll Input</h2>
     <p><strong>Weather:</strong> ${weather}</p>
     <p><strong>Watch Type:</strong> ${watch}</p>
-    <p><strong>Hex:</strong> ${hex}</p>
+    <p><strong>:</strong> ${hex}</p>
     <p><em>Rolling functionality coming soon...</em></p>
   `;
 });
 
-populateHexes();
+populatees();
