@@ -6,9 +6,9 @@ const weatherSelect = document.getElementById('weatherSelect');
 const watchSelect = document.getElementById('watchSelect');
 const rollButton = document.getElementById('rollButton');
 
-// Fetch es from Supabase
-async function populatees() {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=hexname`, {
+// Populate the Hex dropdown with HexName (display) and ID (value)
+async function populateHexes() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=id,hexname`, {
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': `Bearer ${SUPABASE_KEY}`
@@ -17,41 +17,67 @@ async function populatees() {
 
   const hexes = await res.json();
 
+  if (!Array.isArray(hexes)) {
+    console.error("Hex fetch failed:", hexes);
+    return;
+  }
+
   hexes.forEach(hex => {
     const option = document.createElement('option');
-    option.value = hex.hexname;
+    option.value = hex.id; // Use ID for lookup
     option.textContent = hex.hexname;
     hexSelect.appendChild(option);
   });
 }
 
-// Enable button only when all selects are filled
+// Enable button only when all selects are chosen
 function checkSelections() {
-  const weather = weatherSelect.value;
-  const watch = watchSelect.value;
-  const hex = hexSelect.value;
-
-  rollButton.disabled = !(weather && watch && hex);
+  const filled = weatherSelect.value && watchSelect.value && hexSelect.value;
+  rollButton.disabled = !filled;
 }
 
-// Event listeners
 weatherSelect.addEventListener('change', checkSelections);
 watchSelect.addEventListener('change', checkSelections);
 hexSelect.addEventListener('change', checkSelections);
 
-rollButton.addEventListener('click', () => {
-  // Placeholder for logic to come
+// Handle "Roll for Watch" click
+rollButton.addEventListener('click', async () => {
   const weather = weatherSelect.value;
   const watch = watchSelect.value;
-  const hex = hexSelect.value;
+  const hexId = hexSelect.value;
+
+  document.getElementById('outputArea').innerHTML = `<p>Loading terrain information...</p>`;
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrain:terrains(terrainname,terraindescription)&hexid=eq.${hexId}`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`
+    }
+  });
+
+  const data = await res.json();
+
+  if (!Array.isArray(data) || data.length === 0) {
+    document.getElementById('outputArea').innerHTML = `<p>No terrain found for this hex.</p>`;
+    return;
+  }
+
+  const terrainHTML = data.map(entry => {
+    const terrain = entry.terrain;
+    return `
+      <div class="terrain-block">
+        <h2>${terrain.terrainname}</h2>
+        <p>${terrain.terraindescription}</p>
+      </div>
+    `;
+  }).join("");
 
   document.getElementById('outputArea').innerHTML = `
-    <h2>Watch Roll Input</h2>
-    <p><strong>Weather:</strong> ${weather}</p>
-    <p><strong>Watch Type:</strong> ${watch}</p>
-    <p><strong>:</strong> ${hex}</p>
-    <p><em>Rolling functionality coming soon...</em></p>
+    <div class="terrain-container">
+      ${terrainHTML}
+    </div>
   `;
 });
 
-populatees();
+// Initial population
+populateHexes();
