@@ -1,11 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Hexmap App</title>
+  <meta charset="UTF-8">
+  <title>Avernus Encounter Roller</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Avernus Hex Crawler</h1>
-  <div id="output"></div>
+  <main>
+    <h1>Avernus Encounter Roller</h1>
+
+    <section class="form-controls">
+      <label>
+        Weather:
+        <select id="weatherSelect">
+          <option value="">-- Select Weather --</option>
+          <option value="clear">Clear</option>
+          <option value="typical">Typical</option>
+        </select>
+      </label>
+
+      <label>
+        Watch Type:
+        <select id="watchSelect">
+          <option value="">-- Select Watch Type --</option>
+          <option value="active">Active</option>
+          <option value="rest">Rest</option>
+          <option value="travel">Travel</option>
+        </select>
+      </label>
+
+      <label>
+        Hex:
+        <select id="hexSelect">
+          <option value="">-- Select Hex --</option>
+        </select>
+      </label>
+
+      <button id="rollButton" disabled>Roll for Watch</button>
+    </section>
+
+    <section id="outputArea">
+      <!-- Results will go here -->
+    </section>
+  </main>
+
   <script src="script.js"></script>
 </body>
 </html>
