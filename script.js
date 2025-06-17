@@ -88,62 +88,58 @@ rollButton.addEventListener('click', async () => {
   const weather = weatherSelect.value;
   const watch = watchSelect.value;
   const hexId = hexSelect.value;
-const selectedHexName = hexSelect.options[hexSelect.selectedIndex].textContent;
-const weatherIsClear = weather === "clear";
-const radius = weatherIsClear ? 2 : 1;
+  const selectedHexName = hexSelect.options[hexSelect.selectedIndex].textContent;
+  const weatherIsClear = weather === "clear";
+  const radius = weatherIsClear ? 2 : 1;
 
-const nearbyNames = getNeighborHexNames(selectedHexName, radius);
+  const outputArea = document.getElementById('outputArea');
+  outputArea.innerHTML = `<p>Loading...</p>`;
 
-const nameFilter = nearbyNames.map(n => `hexname.eq.${n}`).join(',');
-const queryURL = `${SUPABASE_URL}/rest/v1/hexes?or=(${nameFilter})&hasmountains=eq.true`;
-
-const mountainRes = await fetch(queryURL, {
-  headers: {
-    'apikey': SUPABASE_KEY,
-    'Authorization': `Bearer ${SUPABASE_KEY}`
-  }
-});
-const mountainHexes = await mountainRes.json();
-
-const mountainNames = mountainHexes.map(h => h.hexname).sort();
-
-const mountainHTML = mountainNames.length > 0
-  ? `<h3>Nearby Mountain Hexes (${radius} hex away):</h3><ul>${mountainNames.map(name => `<li>${name}</li>`).join('')}</ul>`
-  : `<p>No mountain hexes found within ${radius} hex(es).</p>`;
-
-document.getElementById('outputArea').innerHTML += `
-  <div class="mountains-block">${mountainHTML}</div>
-`;
-
-  document.getElementById('outputArea').innerHTML = `<p>Loading terrain information...</p>`;
-
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrain:terrains(terrainname,terraindescription)&hexid=eq.${hexId}`, {
+  // 1. Fetch terrain(s) for selected hex
+  const terrainRes = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrain:terrains(terrainname,terraindescription)&hexid=eq.${hexId}`, {
     headers: {
       'apikey': SUPABASE_KEY,
       'Authorization': `Bearer ${SUPABASE_KEY}`
     }
   });
+  const terrainData = await terrainRes.json();
 
-  const data = await res.json();
+  const terrainHTML = Array.isArray(terrainData) && terrainData.length > 0
+    ? terrainData.map(entry => `
+        <div class="terrain-block">
+          <h2>${entry.terrain.terrainname}</h2>
+          <p>${entry.terrain.terraindescription}</p>
+        </div>
+      `).join("")
+    : `<p>No terrain found for this hex.</p>`;
 
-  if (!Array.isArray(data) || data.length === 0) {
-    document.getElementById('outputArea').innerHTML = `<p>No terrain found for this hex.</p>`;
-    return;
-  }
+  // 2. Get nearby hexes with mountains
+  const nearbyNames = getNeighborHexNames(selectedHexName, radius);
 
-  const terrainHTML = data.map(entry => {
-    const terrain = entry.terrain;
-    return `
-      <div class="terrain-block">
-        <h2>${terrain.terrainname}</h2>
-        <p>${terrain.terraindescription}</p>
-      </div>
-    `;
-  }).join("");
+  // Supabase doesn't support IN clause for strings, so we use OR
+  const nameFilter = nearbyNames.map(n => `hexname.eq.${n}`).join(',');
+  const mountainQuery = `${SUPABASE_URL}/rest/v1/hexes?or=(${nameFilter})&hasmountains=eq.true`;
 
-  document.getElementById('outputArea').innerHTML = `
+  const mountainRes = await fetch(mountainQuery, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`
+    }
+  });
+  const mountainHexes = await mountainRes.json();
+  const mountainNames = mountainHexes.map(h => h.hexname).sort();
+
+  const mountainHTML = mountainNames.length > 0
+    ? `<h3>Nearby Mountain Hexes (${radius} hex away):</h3><ul>${mountainNames.map(name => `<li>${name}</li>`).join('')}</ul>`
+    : `<p>No mountain hexes found within ${radius} hex(es).</p>`;
+
+  // 3. Final output
+  outputArea.innerHTML = `
     <div class="terrain-container">
       ${terrainHTML}
+    </div>
+    <div class="mountains-block">
+      ${mountainHTML}
     </div>
   `;
 });
