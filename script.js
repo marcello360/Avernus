@@ -12,41 +12,39 @@ function getHexCoords(hexname) {
   return { row: letter, col: number };
 }
 
-function getNeighborHexNames(hexname, radius = 1) {
-  const directionsEven = [[1, 0], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1]];
-  const directionsOdd = [[1, 0], [1, 1], [0, 1], [-1, 0], [0, -1], [1, -1]];
+function getNeighborHexes(hexname, terrainVisibility) {
+  const colLetter = hexname[0].toUpperCase();
+  const row = parseInt(hexname.slice(1), 10);
+  const colIndex = colLetter.charCodeAt(0) - 'A'.charCodeAt(0);
 
-  const { row, col } = getHexCoords(hexname);
-  const rowIndex = row.charCodeAt(0) - 'A'.charCodeAt(0);
+  // Determine neighbor offsets based on even-q flat-top layout
+  const isEvenRow = row % 2 === 0;
 
-  const results = new Set();
+  const offsets = isEvenRow
+    ? [ [-1, -1], [ 0, -1], [ 1, -1],
+        [-1,  0], [ 1,  0], [ 0,  1] ]
+    : [ [ 0, -1], [-1,  0], [ 1,  0],
+        [ 0,  1], [-1,  1], [ 1,  1] ];
 
-  function addNeighbor(r, c) {
-    if (r < 0 || c < 1) return;
-    const letter = String.fromCharCode('A'.charCodeAt(0) + r);
-    results.add(`${letter}${c}`);
-  }
+  // For "clear" terrain, we extend visibility by 2 columns
+  const extendedOffsets = [
+    ...offsets,
+    [-2, 0], [2, 0] // extra visibility range (horizontal)
+  ];
 
-  function getDirections(x) {
-    return x % 2 === 0 ? directionsEven : directionsOdd;
-  }
+  const chosenOffsets = terrainVisibility === "clear" ? extendedOffsets : offsets;
 
-  function recurse(r, c, depth, visited = new Set()) {
-    const key = `${r},${c}`;
-    if (visited.has(key) || depth > radius) return;
-    visited.add(key);
+  const neighbors = chosenOffsets.map(([dx, dy]) => {
+    const newColIndex = colIndex + dx;
+    const newRow = row + dy;
 
-    addNeighbor(r, c);
+    if (newColIndex < 0 || newRow < 1) return null;
 
-    const directions = getDirections(c);
-    for (const [dr, dc] of directions) {
-      recurse(r + dr, c + dc, depth + 1, visited);
-    }
-  }
+    const newColLetter = String.fromCharCode('A'.charCodeAt(0) + newColIndex);
+    return `${newColLetter}${newRow}`;
+  }).filter(Boolean); // remove nulls
 
-  recurse(rowIndex, col, 0);
-  results.delete(hexname); // exclude origin
-  return [...results];
+  return neighbors;
 }
 
 // Populate the Hex dropdown with HexName (display) and ID (value)
