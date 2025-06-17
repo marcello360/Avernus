@@ -1,5 +1,5 @@
 const SUPABASE_URL = 'https://hhattfmstvpkcsquywpd.supabase.co';
-const SUPABASE_KEY = 'your-anon-key'; // Replace this securely in production
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhoYXR0Zm1zdHZwa2NzcXV5d3BkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxODUyOTEsImV4cCI6MjA2NTc2MTI5MX0.oUHaqgRpM8RPiOE-Y_LeGkohdhUCkBvpaNojWJofbZw'; 
 
 const headers = {
   'apikey': SUPABASE_KEY,
