@@ -67,6 +67,22 @@ h1 {
   max-width: 500px;
 }
 
+.mountains-block {
+  margin-top: 2rem;
+  text-align: center;
+}
+.mountains-block ul {
+  list-style: none;
+  padding: 0;
+}
+.mountains-block li {
+  display: inline-block;
+  margin: 0.25rem 0.5rem;
+  background: #ddd;
+  padding: 0.4rem 0.75rem;
+  border-radius: 5px;
+}
+
 /* Output Styling */
 #outputArea {
   min-height: 300px;
