@@ -3,16 +3,18 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const headers = {
   'apikey': SUPABASE_KEY,
-  'Authorization': `Bearer ${SUPABASE_KEY}`
+  'Authorization': `Bearer ${SUPABASE_KEY}`,
+  'Content-Type': 'application/json'
 };
 
 export async function populateHexes() {
   const hexSelect = document.getElementById('hexSelect');
-
+  
+  // Fetch all hexes from Supabase
   const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=id,hexname`, { headers });
   const hexes = await res.json();
-
-  if (!Array.isArray(hexes)) {
+  
+  if (!hexes || !Array.isArray(hexes)) {
     console.error("Hex fetch failed:", hexes);
     return;
   }
@@ -28,7 +30,7 @@ export async function populateHexes() {
 }
 
 export async function fetchTerrain(hexId) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrain:terrains(terrainname,terraindescription)&hexid=eq.${hexId}`, { headers });
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrain:terrains(terrainname,terraindescription,foragedc,navigationdc,tracklessspeed,roadspeed)&hexid=eq.${hexId}`, { headers });
   return await res.json();
 }
 
