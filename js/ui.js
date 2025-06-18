@@ -149,13 +149,55 @@ export function renderTerrain(data) {
         ${terrainHTML}
       </div>
       <div id="mountains-block"></div>
+      <div id="locations-block"></div>
     `;
     
     // Update the condition card separately
     updateConditionCard();
   }
   
-  export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
+  export function renderLocations(locationsData) {
+    // Get the container element for locations
+    const locationsEl = document.getElementById('locations-block');
+    if (!locationsEl) return;
+    
+    // Check if there's currently a card that is expanded
+    const previousCards = locationsEl.querySelectorAll('.card');
+    // Store the expanded state of each card
+    const expandedStates = Array.from(previousCards).map(card => card.classList.contains('expanded'));
+    
+    let html = '';
+    
+    // Generate location cards if we have location data
+    if (Array.isArray(locationsData) && locationsData.length > 0) {
+      html = locationsData.map((location, index) => `
+        <div class="card" data-location-id="${location.id}">
+          <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
+            <div class="header-content">
+              <h3>${location.locationname}</h3>
+            </div>
+            <span class="toggle-icon">+</span>
+          </div>
+          <div class="card-body">
+            <p>${location.locationdescription}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Update the HTML
+    locationsEl.innerHTML = html;
+    
+    // Restore expanded state for cards that existed before
+    const newCards = locationsEl.querySelectorAll('.card');
+    newCards.forEach((card, index) => {
+      if (index < expandedStates.length && expandedStates[index]) {
+        card.classList.add('expanded');
+      }
+    });
+  }
+
+export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
     const radius = visibility === "clear" ? 2 : 1;
     
     const hexFeatures = {};
