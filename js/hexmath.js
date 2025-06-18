@@ -22,7 +22,7 @@ export function getNeighborHexes(hexname, terrainVisibility) {
   const directions = [];
   const isEvenCol = col % 2 === 1;
   
-  if (isEvenCol) {
+  if (!isEvenCol) {
     directions.push(
       [-1, -1], // Northwest
       [0, -1],  // Northeast
