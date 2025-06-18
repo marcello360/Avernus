@@ -12,6 +12,7 @@
   --feature-bg: #ddd;
   --ref-bg: #e8f4ff;
   --ref-border: #b8d8fb;
+  --ref-item-bg: #ffffff;
   --condition-bg: #f4f4e8;
   --condition-border: #d8d8b8;
   --condition-active-bg: #fff1f1;
@@ -20,6 +21,14 @@
   --output-bg: #f0f0f0;
   --toast-bg: rgba(0, 0, 0, 0.7);
   --toast-color: white;
+  --small-button-bg: #f0f0f0;
+  --small-button-hover: #e0e0e0;
+  --small-button-active: #d0d0d0;
+  --small-button-border: #ccc;
+  --input-bg: #ffffff;
+  --input-border: #ccc;
+  --input-text: #000000;
+  --input-focus-border: #0077cc;
 }
 
 .dark-mode {
@@ -35,6 +44,7 @@
   --feature-bg: #3a3a3a;
   --ref-bg: #1a2633;
   --ref-border: #2c4962;
+  --ref-item-bg: #242c36;
   --condition-bg: #332e1f;
   --condition-border: #5a5233;
   --condition-active-bg: #331a1a;
@@ -43,6 +53,28 @@
   --output-bg: #272727;
   --toast-bg: rgba(40, 40, 40, 0.9);
   --toast-color: #e0e0e0;
+  --small-button-bg: #333333;
+  --small-button-hover: #444444;
+  --small-button-active: #555555;
+  --small-button-border: #555555;
+  --input-bg: #2a2a2a;
+  --input-border: #444444;
+  --input-text: #e0e0e0;
+  --input-focus-border: #4f94d4;
+}
+
+/* Form controls in dark mode */
+select, input[type="text"], input[type="number"] {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  padding: 0.4rem;
+}
+
+select:focus, input[type="text"]:focus, input[type="number"]:focus {
+  border-color: var(--input-focus-border);
+  outline: none;
 }
 
 /* Dark Mode Toggle */
@@ -146,19 +178,20 @@ h1 {
 .small-button {
   padding: 0.4rem;
   font-size: 0.85rem;
-  background: #f0f0f0;
-  border: 1px solid #ccc;
+  background: var(--small-button-bg);
+  border: 1px solid var(--small-button-border);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: var(--text-color);
 }
 
 .small-button:hover {
-  background: #e0e0e0;
+  background: var(--small-button-hover);
 }
 
 .small-button:active {
-  background: #d0d0d0;
+  background: var(--small-button-active);
   transform: scale(0.98);
 }
 
@@ -345,9 +378,10 @@ select:disabled {
 .ref-item {
   font-weight: 500;
   padding: 0.3rem 0.6rem;
-  background: white;
+  background: var(--ref-item-bg);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
 }
 
 /* Condition Reference Bar */
@@ -371,9 +405,10 @@ select:disabled {
 .condition-ref-item {
   font-weight: 600;
   padding: 0.3rem 0.6rem;
-  background: white;
+  background: var(--ref-item-bg);
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
 }
 
 .condition-reference-bar.active .condition-ref-item {
