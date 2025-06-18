@@ -11,41 +11,53 @@
     <h1>Avernus Hex Crawler</h1>
 
     <section class="form-controls">
-      <div class="weather-control-group">
-        <label>
-          Weather:
-          <select id="weatherSelect">
-            <option value="typical" selected>Typical</option>
-            <option value="clear">Clear</option>
-          </select>
-        </label>
-        <button id="weatherRollButton" type="button" class="small-button">Roll (1d6)</button>
+      <div class="options-grid">
+        <div class="column">
+          <div class="form-group">
+            <label>
+              Weather:
+              <select id="weatherSelect">
+                <option value="typical" selected>Typical</option>
+                <option value="clear">Clear</option>
+              </select>
+            </label>
+            <button id="weatherRollButton" type="button" class="small-button">Roll (1d6)</button>
+          </div>
+          
+          <div class="form-group">
+            <label>
+              Watch Type:
+              <select id="watchSelect">
+                <option value="">-- Select Watch Type --</option>
+                <option value="active">Active</option>
+                <option value="rest">Rest</option>
+                <option value="travel">Travel</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        
+        <div class="column">
+          <div class="form-group hex-group">
+            <label>
+              Hex:
+              <select id="hexSelect">
+                <option value="">-- Select Hex --</option>
+              </select>
+            </label>
+          </div>
+          
+          <div class="form-group">
+            <div class="checkbox-container">
+              <label>
+                <input type="checkbox" id="maintainConditionCheck">
+                Maintain Condition
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <label>
-        Watch Type:
-        <select id="watchSelect">
-          <option value="">-- Select Watch Type --</option>
-          <option value="active">Active</option>
-          <option value="rest">Rest</option>
-          <option value="travel">Travel</option>
-        </select>
-      </label>
-
-      <label>
-        Hex:
-        <select id="hexSelect">
-          <option value="">-- Select Hex --</option>
-        </select>
-      </label>
-
-      <div class="checkbox-container">
-        <label>
-          <input type="checkbox" id="maintainConditionCheck">
-          Maintain Condition
-        </label>
-      </div>
-
+      
       <button id="rollButton" disabled>Roll for Watch</button>
     </section>
 
