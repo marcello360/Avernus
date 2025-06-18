@@ -23,8 +23,11 @@ async function onHexChange() {
 
   if (hexId && weatherSelect.value) {
     const nearby = getNeighborHexes(hexName, weatherSelect.value);
+    
     const mountainData = await fetchMountainHexes(nearby);
-    renderMountains(mountainData, weatherSelect.value);
+    const volcanoData = await fetchVolcanoHexes(nearby);
+    
+    renderFeatureHexes(nearby, mountainData, volcanoData, weatherSelect.value);
   }
 }
 
@@ -34,8 +37,11 @@ async function onWeatherChange() {
 
   if (hexName && weather) {
     const nearby = getNeighborHexes(hexName, weather);
+    
     const mountainData = await fetchMountainHexes(nearby);
-    renderMountains(mountainData, weather);
+    const volcanoData = await fetchVolcanoHexes(nearby);
+    
+    renderFeatureHexes(nearby, mountainData, volcanoData, weather);
   }
 }
 
