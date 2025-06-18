@@ -1,6 +1,6 @@
 import { populateHexes, fetchTerrain, fetchMountainHexes, fetchVolcanoHexes, fetchCondition } from './supabase.js';
 import { getNeighborHexes } from './hexmath.js';
-import { renderTerrain, renderFeatureHexes } from './ui.js';
+import { renderTerrain, renderFeatureHexes, updateConditionCard } from './ui.js';
 
 const hexSelect = document.getElementById('hexSelect');
 const weatherSelect = document.getElementById('weatherSelect');
@@ -201,10 +201,8 @@ export async function initializeApp() {
       localStorage.removeItem('conditionDescription');
       localStorage.removeItem('conditionId');
       
-      // Reload the terrain (which will update the condition bar to "No condition")
-      if (hexSelect.value) {
-        onHexChange();
-      }
+      // Update only the condition card instead of triggering a full terrain re-render
+      updateConditionCard();
       return;
     }
     
@@ -225,10 +223,8 @@ export async function initializeApp() {
         localStorage.setItem('conditionDescription', condition.conditiondescription);
         localStorage.setItem('conditionId', condition.id);
         
-        // Reload the terrain (which will update the condition bar with the new condition)
-        if (hexSelect.value) {
-          onHexChange();
-        }
+        // Update only the condition card instead of triggering a full terrain re-render
+        updateConditionCard();
       }
     } catch (error) {
       console.error('Error fetching condition:', error);
