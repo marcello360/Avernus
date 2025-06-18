@@ -1,4 +1,4 @@
-import { populateHexes, fetchTerrain, fetchMountainHexes } from './supabase.js';
+import { populateHexes, fetchTerrain, fetchMountainHexes, fetchVolcanoHexes } from './supabase.js';
 import { getNeighborHexes } from './hexmath.js';
 import { renderTerrain, renderFeatureHexes } from './ui.js';
 
