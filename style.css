@@ -175,6 +175,32 @@ h1 {
   width: 100%;
 }
 
+/* Weather Roll Button Styling */
+#weatherRollButton {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.85rem;
+  background: var(--button-bg);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--button-text);
+}
+
+#weatherRollButton:hover {
+  filter: brightness(1.1);
+}
+
+#weatherRollButton:active {
+  transform: scale(0.98);
+}
+
+#weatherRollButton:disabled {
+  background: var(--button-disabled-bg);
+  cursor: not-allowed;
+}
+
+/* Regular Small Button */
 .small-button {
   padding: 0.4rem;
   font-size: 0.85rem;
@@ -274,6 +300,31 @@ h1 {
 .condition-card {
   border: 2px solid #e53935;
   box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+}
+
+/* Visibility Card Styling */
+.visibility-card {
+  background-color: var(--ref-bg);
+  border: 1px solid var(--ref-border);
+  margin-bottom: 1.5rem;
+  order: 1;
+}
+
+.visibility-card .card-header {
+  background-color: var(--ref-bg);
+  border-bottom: 1px solid var(--ref-border);
+}
+
+.visibility-card .card-body {
+  background-color: var(--ref-bg);
+}
+
+.empty-message {
+  text-align: center;
+  font-style: italic;
+  padding: 0.5rem 0;
+  color: var(--text-color);
+  opacity: 0.8;
 }
 
 .card-header {
@@ -423,6 +474,32 @@ select:disabled {
   background: var(--output-bg);
   margin-top: 2rem;
   overflow-wrap: break-word;
+}
+
+/* Container order for proper cards positioning */
+#outputArea {
+  display: flex;
+  flex-direction: column;
+}
+
+.quick-reference-bar {
+  order: 0;
+}
+
+#condition-container {
+  order: 2;
+}
+
+.terrain-container {
+  order: 3;
+}
+
+#mountains-block {
+  order: 1;
+}
+
+#locations-block {
+  order: 4;
 }
 
 /* Responsive Design - Tablet & Mobile Adjustments */
