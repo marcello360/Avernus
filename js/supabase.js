@@ -45,11 +45,24 @@ export async function fetchMountainHexes(hexNames) {
 export async function fetchVolcanoHexes(hexNames) {
   if (!hexNames || hexNames.length === 0) return [];
 
-  const filters = hexNames.map(name => `hexname.eq.${name}`).join(',');
-  const url = `${SUPABASE_URL}/rest/v1/hexterrains?select=hex:hexes(hexname)&terrainid=eq.9&or=(${filters.split(',').map(filter => `hex.${filter}`).join(',')})`;
+  const hexFilters = hexNames.map(name => `hexname=eq.${name}`).join('&');
+  const hexUrl = `${SUPABASE_URL}/rest/v1/hexes?select=id,hexname&${hexFilters}`;
   
-  const res = await fetch(url, { headers });
-  const data = await res.json();
+  const hexRes = await fetch(hexUrl, { headers });
+  const hexes = await hexRes.json();
   
-  return data.map(item => item.hex);
+  if (!hexes || hexes.length === 0) return [];
+  
+  const hexIds = hexes.map(h => h.id);
+  const idFilters = hexIds.map(id => `hexid=eq.${id}`).join('&');
+  const terrainUrl = `${SUPABASE_URL}/rest/v1/hexterrains?select=hexid,terrainid&${idFilters}`;
+  
+  const terrainRes = await fetch(terrainUrl, { headers });
+  const terrains = await terrainRes.json();
+  
+  const volcanoHexIds = terrains
+    .filter(t => t.terrainid === 9)
+    .map(t => t.hexid);
+  
+  return hexes.filter(h => volcanoHexIds.includes(h.id));
 }
