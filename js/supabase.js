@@ -17,6 +17,8 @@ export async function populateHexes() {
     return;
   }
 
+  hexes.sort((a, b) => a.hexname.localeCompare(b.hexname));
+
   hexes.forEach(hex => {
     const option = document.createElement('option');
     option.value = hex.id;
@@ -36,6 +38,16 @@ export async function fetchMountainHexes(hexNames) {
   const filters = hexNames.map(name => `hexname.eq.${name}`).join(',');
   const url = `${SUPABASE_URL}/rest/v1/hexes?or=(${filters})&hasmountains=eq.true`;
 
+  const res = await fetch(url, { headers });
+  return await res.json();
+}
+
+export async function fetchVolcanoHexes(hexNames) {
+  if (!hexNames || hexNames.length === 0) return [];
+
+  const filters = hexNames.map(name => `hexname.eq.${name}`).join(',');
+  const url = `${SUPABASE_URL}/rest/v1/hexterrains?or=(${filters})&terrainid=eq.9`;
+  
   const res = await fetch(url, { headers });
   return await res.json();
 }
