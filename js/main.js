@@ -1,6 +1,6 @@
 import { populateHexes, fetchTerrain, fetchMountainHexes } from './supabase.js';
 import { getNeighborHexes } from './hexmath.js';
-import { renderTerrain, renderMountains } from './ui.js';
+import { renderTerrain, renderFeatureHexes } from './ui.js';
 
 const hexSelect = document.getElementById('hexSelect');
 const weatherSelect = document.getElementById('weatherSelect');
