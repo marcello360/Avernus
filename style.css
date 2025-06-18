@@ -24,23 +24,43 @@ h1 {
 
 /* Form Layout */
 .form-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.options-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  align-items: end;
+  gap: 1.5rem;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hex-group label {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.hex-group select {
+  border: 2px solid #444;
+  padding: 0.45rem;
 }
 
 .form-controls label {
   display: flex;
   flex-direction: column;
   font-size: 0.95rem;
-}
-
-.weather-control-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  position: relative;
 }
 
 .weather-control-group label {
