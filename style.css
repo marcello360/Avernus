@@ -62,27 +62,78 @@ h1 {
   text-align: center;
 }
 
-.terrain-block {
-  margin-bottom: 1.5rem;
-  max-width: 500px;
+/* Collapsible Card Styling */
+.card {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.mountains-block {
-  margin-top: 2rem;
-  text-align: center;
+.card-header {
+  background: #f3f3f3;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
 }
 
-.mountains-block ul {
+.card-header h2,
+.card-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.toggle-icon {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Cards are collapsed by default */
+.card-body {
+  display: none;
+  padding: 1rem;
+  background: #fff;
+}
+
+/* When expanded */
+.card.expanded .card-body {
+  display: block;
+}
+
+.card.expanded .toggle-icon {
+  transform: rotate(45deg);
+}
+
+/* Features list */
+.features-list {
   list-style: none;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
-.mountains-block li {
-  display: inline-block;
-  margin: 0.25rem 0.5rem;
+.features-list li {
   background: #ddd;
   padding: 0.4rem 0.75rem;
   border-radius: 5px;
+}
+
+/* Checkbox styling */
+.checkbox-container {
+  grid-column: span 2;
+  margin-bottom: 1rem;
+}
+
+/* Disabled state for weather dropdown */
+select:disabled {
+  background-color: #e9e9e9;
+  color: #666;
+  cursor: not-allowed;
 }
 
 
