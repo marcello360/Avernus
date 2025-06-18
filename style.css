@@ -35,6 +35,82 @@ h1 {
   font-size: 0.95rem;
 }
 
+.weather-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.weather-control-group label {
+  width: 100%;
+}
+
+.small-button {
+  padding: 0.4rem;
+  font-size: 0.85rem;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.small-button:hover {
+  background: #e0e0e0;
+}
+
+.small-button:active {
+  background: #d0d0d0;
+  transform: scale(0.98);
+}
+
+.small-button:disabled {
+  background: #e9e9e9;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.rolling {
+  animation: roll-dice 0.3s ease;
+}
+
+@keyframes roll-dice {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.03) rotate(2deg); }
+  50% { transform: scale(0.97) rotate(-2deg); }
+  75% { transform: scale(1.02) rotate(1deg); }
+  100% { transform: scale(1); }
+}
+
+/* Toast notification styling */
+#toastContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.toast {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  max-width: 250px;
+  opacity: 0;
+  animation: toast-in-out 3s ease-in-out forwards;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+@keyframes toast-in-out {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
+}
+
 /* Button Styling */
 #rollButton {
   grid-column: span 2;
@@ -129,6 +205,17 @@ h1 {
 .checkbox-container {
   grid-column: span 2;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  cursor: pointer;
 }
 
 /* Disabled state for weather dropdown */
@@ -138,6 +225,57 @@ select:disabled {
   cursor: not-allowed;
 }
 
+
+/* Quick Reference Bar */
+.quick-reference-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #e8f4ff;
+  border: 1px solid #b8d8fb;
+  border-radius: 5px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  justify-content: space-around;
+}
+
+.ref-item {
+  font-weight: 500;
+  padding: 0.3rem 0.6rem;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Condition Reference Bar */
+.condition-reference-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #f4f4e8;
+  border: 1px solid #d8d8b8;
+  border-radius: 5px;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.condition-reference-bar.active {
+  background: #fff1f1;
+  border: 1px solid #fbb8b8;
+}
+
+.condition-ref-item {
+  font-weight: 600;
+  padding: 0.3rem 0.6rem;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.condition-reference-bar.active .condition-ref-item {
+  color: #c00;
+}
 
 /* Output Styling */
 #outputArea {
