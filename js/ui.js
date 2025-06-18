@@ -226,27 +226,34 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
     
-    let html = '';
+    let cardContent;
     if (hexesWithFeatures.length > 0) {
       const featuresList = hexesWithFeatures.map(h => 
         `<li>${h.name}: ${h.features.join(", ")}</li>`).join('');
         
-      html = `
-        <div class="card">
-          <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <div class="header-content">
-              <h3>Visible Mountains/Volcanoes</h3>
-            </div>
-            <span class="toggle-icon">+</span>
-          </div>
-          <div class="card-body">
-            <ul class="features-list">
-              ${featuresList}
-            </ul>
-          </div>
-        </div>
+      cardContent = `
+        <ul class="features-list">
+          ${featuresList}
+        </ul>
       `;
+    } else {
+      cardContent = `<p class="empty-message">No nearby hexes visible</p>`;
     }
+    
+    // Always render the visibility card with the appropriate content
+    const html = `
+      <div class="card visibility-card">
+        <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+          <div class="header-content">
+            <h3>Visibility</h3>
+          </div>
+          <span class="toggle-icon">+</span>
+        </div>
+        <div class="card-body">
+          ${cardContent}
+        </div>
+      </div>
+    `;
   
     const mountEl = document.getElementById('mountains-block');
     if (mountEl) {
