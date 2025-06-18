@@ -18,13 +18,41 @@ export function renderTerrain(data) {
   `;
 }
 
-export function renderMountains(hexes, visibility) {
+export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
   const radius = visibility === "clear" ? 2 : 1;
-  const names = hexes.map(h => h.hexname).sort();
-
-  const html = names.length > 0
-    ? `<h3>Nearby Mountain Hexes (${radius} hex away):</h3><ul>${names.map(name => `<li>${name}</li>`).join('')}</ul>`
-    : `<p>No mountain hexes found within ${radius} hex(es).</p>`;
+  
+  const hexFeatures = {};
+  
+  allNearbyHexes.forEach(hex => {
+    hexFeatures[hex] = [];
+  });
+  
+  mountainHexes.forEach(hex => {
+    if (hexFeatures[hex.hexname]) {
+      hexFeatures[hex.hexname].push("Mountain");
+    }
+  });
+  
+  volcanoHexes.forEach(hex => {
+    if (hexFeatures[hex.hexname]) {
+      hexFeatures[hex.hexname].push("Volcano");
+    }
+  });
+  
+  const hexesWithFeatures = Object.keys(hexFeatures)
+    .filter(hex => hexFeatures[hex].length > 0)
+    .map(hex => ({
+      name: hex,
+      features: hexFeatures[hex]
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  
+  const html = hexesWithFeatures.length > 0
+    ? `<h3>Nearby Feature Hexes (${radius} hex away):</h3>
+      <ul>${hexesWithFeatures.map(h => 
+        `<li>${h.name}: ${h.features.join(", ")}</li>`).join('')}
+      </ul>`
+    : `<p>No feature hexes found within ${radius} hex(es).</p>`;
 
   const mountEl = document.getElementById('mountains-block');
   if (mountEl) mountEl.innerHTML = html;
