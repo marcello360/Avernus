@@ -3,6 +3,8 @@ import { getNeighborHexes } from './hexmath.js';
 import { renderTerrain, renderFeatureHexes, updateConditionCard, renderLocations } from './ui.js';
 
 const hexSelect = document.getElementById('hexSelect');
+// Define restricted hexes to ensure they are available throughout the application
+const restrictedHexes = ['D5', 'E5', 'F5'];
 const weatherSelect = document.getElementById('weatherSelect');
 const weatherRollButton = document.getElementById('weatherRollButton');
 const watchSelect = document.getElementById('watchSelect');
@@ -248,7 +250,6 @@ export async function initializeApp() {
     localStorage.setItem('maintainConditionChecked', maintainCondition);
     
     // Only update the weather restrictions for special hexes
-    const restrictedHexes = ['D5', 'E5', 'F5'];
     
     if (!maintainCondition && hexName && restrictedHexes.includes(hexName)) {
       // Save current weather if not already saved
