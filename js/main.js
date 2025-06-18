@@ -8,6 +8,9 @@ const weatherRollButton = document.getElementById('weatherRollButton');
 const watchSelect = document.getElementById('watchSelect');
 const rollButton = document.getElementById('rollButton');
 
+// Store the current hex's terrain data
+let currentTerrainData = [];
+
 function checkSelections() {
   const filled = weatherSelect.value && watchSelect.value && hexSelect.value;
   rollButton.disabled = !filled;
@@ -182,9 +185,6 @@ export async function initializeApp() {
 
   // Roll for Watch button event listener
   rollButton.addEventListener('click', rollForCondition);
-  
-  // Store the current hex's terrain data
-  let currentTerrainData = [];
   
   // Function to update condition status in UI and localStorage
   async function updateConditionStatus(hasCondition, conditionId = null) {
