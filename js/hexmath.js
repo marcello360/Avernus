@@ -1,86 +1,90 @@
-function offsetToCube(col, row) {
-  const isEvenCol = col % 2 === 1;
-  const x = col;
-  const z = row - (isEvenCol ? 0.5 : 0);
-  const y = -x - z;
-  return { x, y, z };
-}
-
-function cubeToOffset(x, y, z) {
-  const col = x;
-  const isEvenCol = col % 2 === 1;
-  let row = z + (isEvenCol ? 0.5 : 0);
-  row = Math.round(row);
-  return { col, row };
-}
-
 export function getNeighborHexes(hexname, terrainVisibility) {
   const colLetter = hexname[0].toUpperCase();
   const row = parseInt(hexname.slice(1), 10);
   const col = colLetter.charCodeAt(0) - 'A'.charCodeAt(0);
   
-  const directions = [];
-  const isEvenCol = col % 2 === 1;
+  const isOddCol = col % 2 === 0; // A=0, C=2, E=4, etc.
   
-  if (!isEvenCol) {
-    directions.push(
-      [-1, -1], // Northwest
-      [0, -1],  // Northeast
-      [1, -1],  // East
-      [1, 0],   // Southeast
-      [0, 1],   // Southwest
-      [-1, 0]   // West
-    );
+  let directNeighbors = [];
+  
+  if (isOddCol) {
+    directNeighbors = [
+      [col-1, row-1], // Northwest
+      [col, row-1],   // North
+      [col+1, row-1], // Northeast
+      [col+1, row],   // Southeast
+      [col, row+1],   // South
+      [col-1, row],   // Southwest
+    ];
   } else {
-    directions.push(
-      [-1, 0],  // Northwest
-      [0, -1],  // Northeast
-      [1, 0],   // East
-      [1, 1],   // Southeast
-      [0, 1],   // Southwest
-      [-1, 1]   // West
-    );
+    directNeighbors = [
+      [col-1, row],   // Northwest
+      [col, row-1],   // North
+      [col+1, row],   // Northeast
+      [col+1, row+1], // Southeast
+      [col, row+1],   // South
+      [col-1, row+1], // Southwest
+    ];
   }
   
   const neighbors = [];
   const radius = terrainVisibility === "clear" ? 2 : 1;
+  const visited = new Set([`${colLetter}${row}`]);
   
-  // Use BFS to find all hexes within the radius
-  const visited = new Set([`${col},${row}`]);
-  const queue = [{ col, row, dist: 0 }];
-  
-  while (queue.length > 0) {
-    const { col: c, row: r, dist } = queue.shift();
-    
-    if (!(c === col && r === row)) {
-      if (c >= 0 && r >= 1 && c <= 9 && r <= 6) { // Valid grid bounds (A-J, 1-6)
-        const newColChar = String.fromCharCode('A'.charCodeAt(0) + c);
-        neighbors.push(`${newColChar}${r}`);
-      }
+  // For radius 1, get direct neighbors
+  for (const [ncol, nrow] of directNeighbors) {
+    if (ncol >= 0 && ncol <= 9 && nrow >= 1 && nrow <= 6) {
+      const colChar = String.fromCharCode('A'.charCodeAt(0) + ncol);
+      const newHex = `${colChar}${nrow}`;
+      neighbors.push(newHex);
+      visited.add(newHex);
     }
-    
-    if (dist < radius) {
-      const currentIsEvenCol = c % 2 === 1;
+  }
+  
+  // For radius 2, get neighbors of neighbors
+  if (radius >= 2) {
+    const additionalNeighbors = [];
+  
+    for (const neighbor of neighbors) {
+      const nColLetter = neighbor[0];
+      const nRow = parseInt(neighbor.slice(1), 10);
+      const nCol = nColLetter.charCodeAt(0) - 'A'.charCodeAt(0);
       
-      for (let i = 0; i < 6; i++) {
-        let dir;
-        if (currentIsEvenCol) {
-          dir = directions[i];
-        } else {
-          dir = directions[i];
-        }
-        const newCol = c + dir[0];
-        const newRow = r + dir[1];
-        
-        if (newCol >= 0 && newRow >= 1 && newCol <= 9 && newRow <= 6) {
-          const key = `${newCol},${newRow}`;
-          if (!visited.has(key)) {
-            visited.add(key);
-            queue.push({ col: newCol, row: newRow, dist: dist + 1 });
+      const isNOddCol = nCol % 2 === 0;
+      let secondaryNeighbors = [];
+      
+      if (isNOddCol) {
+        secondaryNeighbors = [
+          [nCol-1, nRow-1], // Northwest
+          [nCol, nRow-1],   // North
+          [nCol+1, nRow-1], // Northeast
+          [nCol+1, nRow],   // Southeast
+          [nCol, nRow+1],   // South
+          [nCol-1, nRow],   // Southwest
+        ];
+      } else {
+        secondaryNeighbors = [
+          [nCol-1, nRow],   // Northwest
+          [nCol, nRow-1],   // North
+          [nCol+1, nRow],   // Northeast
+          [nCol+1, nRow+1], // Southeast
+          [nCol, nRow+1],   // South
+          [nCol-1, nRow+1], // Southwest
+        ];
+      }
+      
+      for (const [scol, srow] of secondaryNeighbors) {
+        if (scol >= 0 && scol <= 9 && srow >= 1 && srow <= 6) {
+          const newHex = `${String.fromCharCode('A'.charCodeAt(0) + scol)}${srow}`;
+          if (!visited.has(newHex)) {
+            visited.add(newHex);
+            additionalNeighbors.push(newHex);
           }
         }
       }
     }
+    
+    neighbors.push(...additionalNeighbors);
   }
   
   return neighbors.sort();
