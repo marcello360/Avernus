@@ -161,6 +161,12 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Condition Card Styling with Red Highlight */
+.condition-card {
+  border: 2px solid #e53935;
+  box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
+}
+
 .card-header {
   background: #f3f3f3;
   padding: 0.75rem 1rem;
