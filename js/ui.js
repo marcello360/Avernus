@@ -25,6 +25,51 @@ function decimalToFraction(decimal) {
   return fractions[decimalStr] || `${roundedDecimal}`;
 }
 
+// Function to update just the condition card separately
+export function updateConditionCard() {
+  // Get current condition status and details from localStorage
+  const hasCondition = localStorage.getItem('hasCondition') === 'true';
+  let conditionName = localStorage.getItem('conditionName') || '';
+  let conditionDescription = localStorage.getItem('conditionDescription') || '';
+  
+  // Create the collapsible condition reference bar
+  let conditionRefHTML = '';
+  
+  if (hasCondition && conditionName) {
+    // Show condition with name and description in collapsible section
+    conditionRefHTML = `
+      <div class="condition-card card">
+        <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+          <div class="header-content">
+            <h3>${conditionName}</h3>
+          </div>
+          <span class="toggle-icon">+</span>
+        </div>
+        <div class="card-body">
+          <p>${conditionDescription}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Find or create condition container
+  let conditionContainer = document.getElementById('condition-container');
+  if (!conditionContainer) {
+    // If container doesn't exist, create it after quick-reference-bar
+    const quickRefBar = document.querySelector('.quick-reference-bar');
+    if (quickRefBar) {
+      conditionContainer = document.createElement('div');
+      conditionContainer.id = 'condition-container';
+      quickRefBar.parentNode.insertBefore(conditionContainer, quickRefBar.nextSibling);
+    }
+  }
+  
+  // Update condition container if it exists
+  if (conditionContainer) {
+    conditionContainer.innerHTML = conditionRefHTML;
+  }
+}
+
 export function renderTerrain(data) {
     const outputArea = document.getElementById('outputArea');
   
@@ -74,41 +119,11 @@ export function renderTerrain(data) {
     if (hasValidData) {
       quickRefHTML = `
         <div class="quick-reference-bar">
-          <div class="ref-item">Forage: DC${maxForageDC > 0 ? maxForageDC : '?'}</div>
-          <div class="ref-item">Navigation: DC${maxNavigationDC > 0 ? maxNavigationDC : '?'}</div>
-          <div class="ref-item">Road/Trail Speed: x${minRoadSpeed < 1 ? decimalToFraction(minRoadSpeed) : '1'}</div>
-          <div class="ref-item">Trackless Speed: x${minTracklessSpeed < 1 ? decimalToFraction(minTracklessSpeed) : '1'}</div>
+          <div class="ref-item">Forage: DC ${maxForageDC > 0 ? maxForageDC : '?'}</div>
+          <div class="ref-item">Navigation: DC ${maxNavigationDC > 0 ? maxNavigationDC : '?'}</div>
+          <div class="ref-item">Road/Trail Speed: x ${minRoadSpeed < 1 ? decimalToFraction(minRoadSpeed) : '1'}</div>
+          <div class="ref-item">Trackless Speed: x ${minTracklessSpeed < 1 ? decimalToFraction(minTracklessSpeed) : '1'}</div>
         </div>
-      `;
-    }
-    
-    // Create condition reference bar
-    // Get current condition status and details from localStorage
-    const hasCondition = localStorage.getItem('hasCondition') === 'true';
-    let conditionName = localStorage.getItem('conditionName') || '';
-    let conditionDescription = localStorage.getItem('conditionDescription') || '';
-    
-    // Create the collapsible condition reference bar
-    let conditionRefHTML = '';
-    
-    if (hasCondition && conditionName) {
-      // Show condition with name and description in collapsible section
-      conditionRefHTML = `
-        <div class="condition-card card">
-          <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <div class="header-content">
-              <h3>${conditionName}</h3>
-            </div>
-            <span class="toggle-icon">+</span>
-          </div>
-          <div class="card-body">
-            <p>${conditionDescription}</p>
-          </div>
-        </div>
-      `;
-    } else {
-      // Default to simple "No condition" display
-      conditionRefHTML = `
       `;
     }
   
@@ -129,12 +144,15 @@ export function renderTerrain(data) {
   
     outputArea.innerHTML = `
       ${quickRefHTML}
-      ${conditionRefHTML}
+      <div id="condition-container"></div>
       <div class="terrain-container">
         ${terrainHTML}
       </div>
       <div id="mountains-block"></div>
     `;
+    
+    // Update the condition card separately
+    updateConditionCard();
   }
   
   export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
