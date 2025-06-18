@@ -94,26 +94,21 @@ export function renderTerrain(data) {
     if (hasCondition && conditionName) {
       // Show condition with name and description in collapsible section
       conditionRefHTML = `
-        <div class="condition-reference-bar active">
-          <div class="condition-card card">
-            <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
-              <div class="header-content">
-                <h3>${conditionName}</h3>
-              </div>
-              <span class="toggle-icon">+</span>
+        <div class="condition-card card">
+          <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+            <div class="header-content">
+              <h3>${conditionName}</h3>
             </div>
-            <div class="card-body">
-              <p>${conditionDescription}</p>
-            </div>
+            <span class="toggle-icon">+</span>
+          </div>
+          <div class="card-body">
+            <p>${conditionDescription}</p>
           </div>
         </div>
       `;
     } else {
       // Default to simple "No condition" display
       conditionRefHTML = `
-        <div class="condition-reference-bar">
-          <div class="condition-ref-item">No condition</div>
-        </div>
       `;
     }
   
