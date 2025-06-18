@@ -23,7 +23,6 @@ export function getNeighborHexes(hexname, terrainVisibility) {
   const isEvenCol = col % 2 === 1;
   
   if (isEvenCol) {
-    // For even columns (B, D, F), neighbors are:
     directions.push(
       [-1, -1], // Northwest
       [0, -1],  // Northeast
@@ -33,7 +32,6 @@ export function getNeighborHexes(hexname, terrainVisibility) {
       [-1, 0]   // West
     );
   } else {
-    // For odd columns (A, C, E), neighbors are:
     directions.push(
       [-1, 0],  // Northwest
       [0, -1],  // Northeast
@@ -47,6 +45,7 @@ export function getNeighborHexes(hexname, terrainVisibility) {
   const neighbors = [];
   const radius = terrainVisibility === "clear" ? 2 : 1;
   
+  // Use BFS to find all hexes within the radius
   const visited = new Set([`${col},${row}`]);
   const queue = [{ col, row, dist: 0 }];
   
