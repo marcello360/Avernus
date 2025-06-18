@@ -44,17 +44,12 @@ export async function fetchMountainHexes(hexNames) {
 
 export async function fetchVolcanoHexes(hexNames) {
   if (!hexNames || hexNames.length === 0) return [];
-  
-  console.log('Fetching volcano hexes for:', hexNames);
 
   const hexFilters = hexNames.map(name => `hexname.eq.${name}`).join(',');
   const hexUrl = `${SUPABASE_URL}/rest/v1/hexes?select=id,hexname&or=(${hexFilters})`;
   
-  console.log('Hex URL for volcano fetch:', hexUrl);
   const hexRes = await fetch(hexUrl, { headers });
   const hexes = await hexRes.json();
-  
-  console.log('Hexes data for volcano processing:', hexes);
   
   if (!hexes || hexes.length === 0) return [];
   
@@ -62,18 +57,14 @@ export async function fetchVolcanoHexes(hexNames) {
   const idFilters = hexIds.map(id => `hexid.eq.${id}`).join(',');
   const terrainUrl = `${SUPABASE_URL}/rest/v1/hexterrains?select=hexid,terrainid&or=(${idFilters})`;
   
-  console.log('Terrain URL for volcano fetch:', terrainUrl);
   const terrainRes = await fetch(terrainUrl, { headers });
   const terrains = await terrainRes.json();
-  
-  console.log('Terrains data for volcano processing:', terrains);
   
   const volcanoHexIds = terrains
     .filter(t => t.terrainid === 9)
     .map(t => t.hexid);
   
   const result = hexes.filter(h => volcanoHexIds.includes(h.id));
-  console.log('Final volcano hexes:', result);
   
   return result;
 }
