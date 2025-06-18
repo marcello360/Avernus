@@ -1,14 +1,13 @@
 function offsetToCube(col, row) {
-  // Odd-q vertical layout for flat-top hexes
-  const x = col;
-  const z = row - ((col & 1) === 1 ? (col + 1) >> 1 : col >> 1);
+  const x = col - ((row & 1) === 1 ? 0 : Math.floor(row / 2));
+  const z = row;
   const y = -x - z;
   return { x, y, z };
 }
 
 function cubeToOffset(x, y, z) {
-  const col = x;
-  const row = z + ((x & 1) === 1 ? (x + 1) >> 1 : x >> 1);
+  const row = z;
+  const col = x + ((row & 1) === 1 ? 0 : Math.floor(row / 2));
   return { col, row };
 }
 
@@ -26,19 +25,18 @@ export function getNeighborHexes(hexname, terrainVisibility) {
     for (let dy = Math.max(-radius, -dx - radius); dy <= Math.min(radius, -dx + radius); dy++) {
       const dz = -dx - dy;
 
-      // Skip center
-      if (dx === 0 && dy === 0 && dz === 0) continue;
+      if (dx === 0 && dy === 0) continue;
 
       const nx = centerCube.x + dx;
       const ny = centerCube.y + dy;
       const nz = centerCube.z + dz;
 
-      const { col: nCol, row: nRow } = cubeToOffset(nx, ny, nz);
+      const { col: newCol, row: newRow } = cubeToOffset(nx, ny, nz);
 
-      if (nCol < 0 || nRow < 1) continue;
+      if (newCol < 0 || newRow < 1) continue;
 
-      const colChar = String.fromCharCode('A'.charCodeAt(0) + nCol);
-      neighbors.push(`${colChar}${nRow}`);
+      const colChar = String.fromCharCode('A'.charCodeAt(0) + newCol);
+      neighbors.push(`${colChar}${newRow}`);
     }
   }
 
