@@ -277,7 +277,12 @@ export async function initializeApp() {
     
     // Update checkbox state
     const maintainConditionCheck = document.getElementById('maintainConditionCheck');
-    maintainConditionCheck.checked = hasCondition;
+    // Only check the checkbox if hasCondition is true AND the condition ID is not 6 or 10
+    if (hasCondition && conditionId !== null) {
+      maintainConditionCheck.checked = !(conditionId === 6 || conditionId === 10);
+    } else {
+      maintainConditionCheck.checked = hasCondition;
+    }
     
     // Clear condition details if no condition
     if (!hasCondition) {
