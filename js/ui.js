@@ -117,10 +117,10 @@ export function renderTerrain(data) {
       `;
     }
   
-    // Create terrain cards
+    // Create terrain cards with both click and touch handling
     const terrainHTML = data.map(entry => `
       <div class="card">
-        <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
+        <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
           <div class="header-content">
             <h2>${entry.terrain.terrainname}</h2>
           </div>
