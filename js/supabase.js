@@ -47,8 +47,8 @@ export async function fetchVolcanoHexes(hexNames) {
   
   console.log('Fetching volcano hexes for:', hexNames);
 
-  const hexFilters = hexNames.map(name => `hexname=eq.${name}`).join('&');
-  const hexUrl = `${SUPABASE_URL}/rest/v1/hexes?select=id,hexname&${hexFilters}`;
+  const hexFilters = hexNames.map(name => `hexname.eq.${name}`).join(',');
+  const hexUrl = `${SUPABASE_URL}/rest/v1/hexes?select=id,hexname&or=(${hexFilters})`;
   
   console.log('Hex URL for volcano fetch:', hexUrl);
   const hexRes = await fetch(hexUrl, { headers });
