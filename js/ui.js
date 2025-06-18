@@ -6,7 +6,7 @@ export function renderTerrain(data) {
         <div class="card">
           <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
             <div class="header-content">
-              <h2>${entry.terrain.terrainname}</h2>
+              <h3>${entry.terrain.terrainname}</h3>
             </div>
             <span class="toggle-icon">+</span>
           </div>
