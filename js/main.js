@@ -1,6 +1,6 @@
-import { populateHexes, fetchTerrain, fetchMountainHexes, fetchVolcanoHexes, fetchCondition } from './supabase.js';
+import { populateHexes, fetchTerrain, fetchMountainHexes, fetchVolcanoHexes, fetchCondition, fetchLocations } from './supabase.js';
 import { getNeighborHexes } from './hexmath.js';
-import { renderTerrain, renderFeatureHexes, updateConditionCard } from './ui.js';
+import { renderTerrain, renderFeatureHexes, updateConditionCard, renderLocations } from './ui.js';
 
 const hexSelect = document.getElementById('hexSelect');
 const weatherSelect = document.getElementById('weatherSelect');
@@ -57,12 +57,22 @@ async function onHexChange() {
   const savedCardStates = saveCardStates();
 
   if (hexId) {
-    const terrainData = await fetchTerrain(hexId);
+    // Fetch both terrain and locations data for the selected hex
+    const [terrainData, locationsData] = await Promise.all([
+      fetchTerrain(hexId),
+      fetchLocations(hexId)
+    ]);
+    
     // Store the terrain data for condition rolls
     currentTerrainData = terrainData;
     // Save terrain data to localStorage
     localStorage.setItem('currentTerrainData', JSON.stringify(terrainData));
+    
+    // Render terrain cards
     renderTerrain(terrainData);
+    
+    // Render location cards
+    renderLocations(locationsData);
   }
   
   // Handle special hexes (D5, E5, F5)
