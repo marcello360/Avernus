@@ -385,6 +385,7 @@ export async function initializeApp() {
         
         if (hasCondition) {
           // Condition triggered - roll d12 to determine which condition
+          showToast(`Rolled ${roll} - New Condition triggered`);
           await rollForSpecificCondition();
         } else {
           // No condition
