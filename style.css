@@ -81,6 +81,15 @@ h1 {
   position: relative;
 }
 
+.header-content {
+  flex: 1;
+  text-align: left;
+}
+
+.toggle-icon {
+  margin-left: 10px;
+}
+
 .card-header h2,
 .card-header h3 {
   margin: 0;
