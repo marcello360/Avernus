@@ -275,23 +275,13 @@ export async function initializeApp() {
     // Store condition status in localStorage
     localStorage.setItem('hasCondition', hasCondition);
     
-    // Get the checkbox and its container
+    // Update checkbox state
     const maintainConditionCheck = document.getElementById('maintainConditionCheck');
-    const checkboxContainer = document.querySelector('.checkbox-container');
-    
-    // Show or hide the checkbox container based on whether there's an active condition
-    if (hasCondition) {
-      checkboxContainer.style.display = 'block';
-      // Only check the checkbox if the condition ID is not 6 or 10
-      if (conditionId !== null) {
-        maintainConditionCheck.checked = !(conditionId === 6 || conditionId === 10);
-      } else {
-        maintainConditionCheck.checked = true;
-      }
+    // Only check the checkbox if hasCondition is true AND the condition ID is not 6 or 10
+    if (hasCondition && conditionId !== null) {
+      maintainConditionCheck.checked = !(conditionId === 6 || conditionId === 10);
     } else {
-      // Hide the checkbox container when there is no active condition
-      checkboxContainer.style.display = 'none';
-      maintainConditionCheck.checked = false;
+      maintainConditionCheck.checked = hasCondition;
     }
     
     // Clear condition details if no condition
