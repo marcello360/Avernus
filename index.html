@@ -3,24 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avernus Hex Crawler</title>
+  <title>Avernus Encounter Roller</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <h1>Avernus Hex Crawler</h1>
+    <h1>Avernus Encounter Roller</h1>
 
     <section class="form-controls">
-      <div class="weather-control-group">
-        <label>
-          Weather:
-          <select id="weatherSelect">
-            <option value="typical" selected>Typical</option>
-            <option value="clear">Clear</option>
-          </select>
-        </label>
-        <button id="weatherRollButton" type="button" class="small-button">Roll (1d6)</button>
-      </div>
+      <label>
+        Weather:
+        <select id="weatherSelect">
+          <option value="typical" selected>Typical</option>
+          <option value="clear">Clear</option>
+        </select>
+      </label>
 
       <label>
         Watch Type:
@@ -53,9 +50,6 @@
       <!-- Results will go here -->
     </section>
   </main>
-
-  <!-- Toast notification container -->
-  <div id="toastContainer"></div>
 
   <script type="module">
   import { initializeApp } from './js/main.js';
