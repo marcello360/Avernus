@@ -5,7 +5,9 @@ export function renderTerrain(data) {
       ? data.map(entry => `
         <div class="card">
           <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <h2>${entry.terrain.terrainname}</h2>
+            <div class="header-content">
+              <h2>${entry.terrain.terrainname}</h2>
+            </div>
             <span class="toggle-icon">+</span>
           </div>
           <div class="card-body">
@@ -60,7 +62,9 @@ export function renderTerrain(data) {
       html = `
         <div class="card">
           <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')">
-            <h3>Nearby Feature Hexes (${radius} hex away)</h3>
+            <div class="header-content">
+              <h3>Visible Mountains/Volcanoes</h3>
+            </div>
             <span class="toggle-icon">+</span>
           </div>
           <div class="card-body">
@@ -70,8 +74,6 @@ export function renderTerrain(data) {
           </div>
         </div>
       `;
-    } else {
-      html = `<p>No feature hexes found within ${radius} hex(es).</p>`;
     }
   
     const mountEl = document.getElementById('mountains-block');
