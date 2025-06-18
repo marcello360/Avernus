@@ -161,13 +161,44 @@ function rollWeather() {
 export async function initializeApp() {
   await populateHexes();
 
-  // Add event listener for the maintain condition checkbox
-  document.getElementById('maintainConditionCheck').addEventListener('change', () => {
-    // Re-trigger hex change to apply/remove restrictions based on checkbox
-    if (hexSelect.value) {
-      onHexChange();
+  // Function to handle maintain condition checkbox changes without full re-render
+  function handleMaintainConditionChange() {
+    const hexName = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    const maintainCondition = document.getElementById('maintainConditionCheck').checked;
+    
+    // Only update the weather restrictions for special hexes
+    const restrictedHexes = ['D5', 'E5', 'F5'];
+    
+    if (!maintainCondition && hexName && restrictedHexes.includes(hexName)) {
+      // Save current weather if not already saved
+      if (originalWeatherValue === null) {
+        originalWeatherValue = weatherSelect.value;
+      }
+      
+      // Force typical and disable both weather select and roll button
+      weatherSelect.value = 'typical';
+      weatherSelect.disabled = true;
+      weatherRollButton.disabled = true;
+      
+      // Update mountain features without re-rendering terrain
+      onWeatherChange();
+    } else if (originalWeatherValue !== null) {
+      // Restore original weather when toggling maintain on or moving away from restricted hexes
+      weatherSelect.value = originalWeatherValue;
+      weatherSelect.disabled = false;
+      weatherRollButton.disabled = false;
+      originalWeatherValue = null;
+      
+      // Update mountain features without re-rendering terrain
+      onWeatherChange();
     }
-  });
+    
+    // Update condition card in case it's affected
+    updateConditionCard();
+  }
+  
+  // Add event listener for the maintain condition checkbox
+  document.getElementById('maintainConditionCheck').addEventListener('change', handleMaintainConditionChange);
 
   watchSelect.addEventListener('change', checkSelections);
   hexSelect.addEventListener('change', () => {
