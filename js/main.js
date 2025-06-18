@@ -176,8 +176,27 @@ function rollWeather() {
   }, 300); // Shorter animation duration
 }
 
+// Function to toggle dark mode
+function toggleDarkMode() {
+  const isDarkMode = document.body.classList.toggle('dark-mode');
+  const darkModeIcon = document.getElementById('darkModeIcon');
+  
+  // Update icon based on current mode
+  darkModeIcon.textContent = isDarkMode ? '☀️' : '🌙';
+  
+  // Save preference to localStorage
+  localStorage.setItem('darkModeEnabled', isDarkMode);
+}
+
 // Function to restore UI elements from localStorage
 async function restoreUIState() {
+  // Restore dark mode preference if available
+  const darkModeEnabled = localStorage.getItem('darkModeEnabled') === 'true';
+  if (darkModeEnabled) {
+    document.body.classList.add('dark-mode');
+    document.getElementById('darkModeIcon').textContent = '☀️';
+  }
+  
   // Restore hex selection
   const savedHexId = localStorage.getItem('selectedHexId');
   if (savedHexId && hexSelect.querySelector(`option[value="${savedHexId}"]`)) {
@@ -216,6 +235,9 @@ async function restoreUIState() {
 
 export async function initializeApp() {
   await populateHexes();
+  
+  // Add event listener for dark mode toggle button
+  document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
 
   // Function to handle maintain condition checkbox changes without full re-render
   function handleMaintainConditionChange() {
