@@ -4,6 +4,7 @@ body {
   margin: 0;
   padding: 1rem;
   background: #f9f9f9;
+  -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
 }
 
 main {
@@ -287,13 +288,169 @@ select:disabled {
   overflow-wrap: break-word;
 }
 
-/* Mobile Adjustments */
+/* Responsive Design - Tablet & Mobile Adjustments */
+
+/* Large tablets (portrait) */
+@media (max-width: 992px) {
+  main {
+    max-width: 95%;
+    padding: 1.5rem;
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+  }
+  
+  .quick-reference-bar, 
+  .condition-reference-bar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  
+  .ref-item, 
+  .condition-ref-item {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Small tablets and large phones */
+@media (max-width: 768px) {
+  body {
+    padding: 0.75rem;
+  }
+  
+  main {
+    padding: 1.25rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .form-controls {
+    gap: 0.8rem;
+  }
+  
+  .card-header h2,
+  .card-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .card {
+    margin-bottom: 0.8rem;
+  }
+  
+  .card-header {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .card-body {
+    padding: 0.8rem;
+  }
+  
+  #outputArea {
+    min-height: 250px;
+  }
+}
+
+/* Phones */
 @media (max-width: 600px) {
+  body {
+    padding: 0.5rem;
+  }
+  
+  main {
+    padding: 1rem;
+    border-radius: 6px;
+  }
+  
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  
   .form-controls {
     grid-template-columns: 1fr;
+    gap: 0.7rem;
   }
-
+  
   #rollButton {
     grid-column: span 1;
+    padding: 0.7rem;
+  }
+  
+  .quick-reference-bar, 
+  .condition-reference-bar {
+    padding: 0.6rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  
+  .ref-item, 
+  .condition-ref-item {
+    text-align: center;
+  }
+  
+  .weather-control-group {
+    gap: 0.4rem;
+  }
+  
+  .checkbox-container label {
+    margin-bottom: 0.2rem;
+  }
+  
+  #outputArea {
+    min-height: 200px;
+    margin-top: 1.5rem;
+    padding: 0.8rem;
+  }
+  
+  .features-list {
+    gap: 0.4rem;
+  }
+  
+  .features-list li {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.9rem;
+  }
+  
+  .card-body {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  main {
+    padding: 0.8rem;
+  }
+  
+  h1 {
+    font-size: 1.3rem;
+  }
+  
+  .form-controls label,
+  .checkbox-container label {
+    font-size: 0.9rem;
+  }
+  
+  #rollButton {
+    padding: 0.6rem;
+    font-size: 0.95rem;
+  }
+  
+  .card-header h2,
+  .card-header h3 {
+    font-size: 1rem;
+  }
+  
+  .toast {
+    max-width: 200px;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
