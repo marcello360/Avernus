@@ -50,6 +50,9 @@ async function onHexChange() {
   const hexId = hexSelect.value;
   const hexName = hexSelect.options[hexSelect.selectedIndex]?.textContent;
   
+  // Save hex selection to localStorage
+  localStorage.setItem('selectedHexId', hexId);
+  
   // Save card states before updating
   const savedCardStates = saveCardStates();
 
@@ -57,6 +60,8 @@ async function onHexChange() {
     const terrainData = await fetchTerrain(hexId);
     // Store the terrain data for condition rolls
     currentTerrainData = terrainData;
+    // Save terrain data to localStorage
+    localStorage.setItem('currentTerrainData', JSON.stringify(terrainData));
     renderTerrain(terrainData);
   }
   
@@ -98,6 +103,9 @@ async function onHexChange() {
 async function onWeatherChange() {
   const hexName = hexSelect.options[hexSelect.selectedIndex]?.textContent;
   const weather = weatherSelect.value;
+  
+  // Save weather selection to localStorage
+  localStorage.setItem('selectedWeather', weather);
 
   if (hexName && weather) {
     const nearby = getNeighborHexes(hexName, weather);
@@ -158,6 +166,44 @@ function rollWeather() {
   }, 300); // Shorter animation duration
 }
 
+// Function to restore UI elements from localStorage
+async function restoreUIState() {
+  // Restore hex selection
+  const savedHexId = localStorage.getItem('selectedHexId');
+  if (savedHexId && hexSelect.querySelector(`option[value="${savedHexId}"]`)) {
+    hexSelect.value = savedHexId;
+  }
+  
+  // Restore weather selection
+  const savedWeather = localStorage.getItem('selectedWeather');
+  if (savedWeather && (savedWeather === 'typical' || savedWeather === 'clear')) {
+    weatherSelect.value = savedWeather;
+  }
+  
+  // Restore watch type
+  const savedWatchType = localStorage.getItem('selectedWatchType');
+  if (savedWatchType && watchSelect.querySelector(`option[value="${savedWatchType}"]`)) {
+    watchSelect.value = savedWatchType;
+  }
+  
+  // Restore maintain condition checkbox
+  const maintainConditionChecked = localStorage.getItem('maintainConditionChecked');
+  if (maintainConditionChecked !== null) {
+    document.getElementById('maintainConditionCheck').checked = maintainConditionChecked === 'true';
+  }
+  
+  // Restore terrain data if available
+  const savedTerrainData = localStorage.getItem('currentTerrainData');
+  if (savedTerrainData) {
+    try {
+      currentTerrainData = JSON.parse(savedTerrainData);
+    } catch (error) {
+      console.error('Error parsing saved terrain data:', error);
+      currentTerrainData = [];
+    }
+  }
+}
+
 export async function initializeApp() {
   await populateHexes();
 
@@ -165,6 +211,9 @@ export async function initializeApp() {
   function handleMaintainConditionChange() {
     const hexName = hexSelect.options[hexSelect.selectedIndex]?.textContent;
     const maintainCondition = document.getElementById('maintainConditionCheck').checked;
+    
+    // Save maintain condition state to localStorage
+    localStorage.setItem('maintainConditionChecked', maintainCondition);
     
     // Only update the weather restrictions for special hexes
     const restrictedHexes = ['D5', 'E5', 'F5'];
@@ -200,7 +249,11 @@ export async function initializeApp() {
   // Add event listener for the maintain condition checkbox
   document.getElementById('maintainConditionCheck').addEventListener('change', handleMaintainConditionChange);
 
-  watchSelect.addEventListener('change', checkSelections);
+  watchSelect.addEventListener('change', () => {
+    checkSelections();
+    // Save watch type to localStorage
+    localStorage.setItem('selectedWatchType', watchSelect.value);
+  });
   hexSelect.addEventListener('change', () => {
     checkSelections();
     onHexChange();
@@ -356,6 +409,9 @@ export async function initializeApp() {
     
     return conditionId;
   }
+  
+  // Restore UI elements from localStorage
+  restoreUIState();
   
   // Trigger initial UI updates
   checkSelections();
