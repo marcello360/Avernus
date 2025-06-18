@@ -46,8 +46,10 @@ export async function fetchVolcanoHexes(hexNames) {
   if (!hexNames || hexNames.length === 0) return [];
 
   const filters = hexNames.map(name => `hexname.eq.${name}`).join(',');
-  const url = `${SUPABASE_URL}/rest/v1/hexterrains?or=(${filters})&terrainid=eq.9`;
+  const url = `${SUPABASE_URL}/rest/v1/hexterrains?select=hex:hexes(hexname)&terrainid=eq.9&or=(${filters.split(',').map(filter => `hex.${filter}`).join(',')})`;
   
   const res = await fetch(url, { headers });
-  return await res.json();
+  const data = await res.json();
+  
+  return data.map(item => item.hex);
 }
