@@ -176,8 +176,9 @@ export function renderTerrain(data) {
             <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
               <div class="header-content">
                 <h3>${location.locationname}</h3>
-                <button class="hide-location-btn" ${isException ? 'disabled' : ''} 
-                  onclick="event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')">
+                <button class="hide-location-btn" ${isException ? 'disabled' : ''}
+                  onclick="event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')" 
+                  ontouchend="event.preventDefault(); event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')">
                   Hide Location
                 </button>
               </div>
@@ -189,8 +190,6 @@ export function renderTerrain(data) {
           </div>
         `;
         }).join('');
-      } else {
-        html = '<p class="no-locations">No visible locations in this hex.</p>';
       }
     }
     
@@ -227,12 +226,8 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
     });
     
     volcanoHexes.forEach(hex => {
-      if (hex.hexname === currentHex) {
-        hexFeatures[hex.hexname] = hexFeatures[hex.hexname] || [];
-        hexFeatures[hex.hexname].push("Volcano");
-      } else if (hexFeatures[hex.hexname]) {
-        hexFeatures[hex.hexname].push("Volcano");
-      }
+      hexFeatures[hex.hexname] = hexFeatures[hex.hexname] || [];
+      hexFeatures[hex.hexname].push("Volcano");
     });
     
     // Special case for C4: Pillar of Skulls
