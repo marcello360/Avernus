@@ -315,16 +315,16 @@ export async function initializeApp() {
         const conditionEnded = roll === 1;
         
         if (conditionEnded) {
-          toastMessage = `Condition Roll: ${roll} - Condition ended`;
+          toastMessage = `Condition ended`;
           await updateConditionStatus(false);
         } else {
-          toastMessage = `Condition Roll: ${roll} - Condition maintained`;
+          toastMessage = `Condition Roll: ${roll} - Maintained`;
         }
       } else {
         const hasCondition = roll === 1;
         
         if (hasCondition) {
-          toastMessage = `Condition Roll: ${roll} - New Condition triggered`;
+          toastMessage = `New Condition triggered`;
           await rollForSpecificCondition();
         } else {
           toastMessage = `Condition Roll: ${roll}`;
@@ -346,7 +346,7 @@ export async function initializeApp() {
     const currentHexId = hexSelect.value;
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
     
-    const visibilityExceptions = ['C4', 'F4', 'J6']; //Locations always visible
+    const visibilityExceptions = ['C2', 'F4', 'J6']; //Locations always visible
     const isExceptionHex = visibilityExceptions.includes(currentHex);
     
     if (isExceptionHex) {
@@ -375,7 +375,7 @@ export async function initializeApp() {
     }
     
     const roll = Math.floor(Math.random() * 12) + 1;
-    let message = `Location roll: ${roll}`;
+    let message = ``;
     
     if (roll === 1 && hiddenLocations.length > 0) {
       const randomIndex = Math.floor(Math.random() * hiddenLocations.length);
@@ -387,13 +387,14 @@ export async function initializeApp() {
         JSON.stringify(visibleLocationIds)
       );
       
-      message += ` - Location revealed: ${locationToReveal.locationname}`;
+      message = `Location revealed: ${locationToReveal.locationname}`;
       
       renderLocations(locations);
       
       return { revealed: true, message };
     }
     
+    message = `Location roll: ${roll}`;
     return { revealed: false, message };
   }
   
