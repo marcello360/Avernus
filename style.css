@@ -29,6 +29,7 @@
   --input-border: #ccc;
   --input-text: #000000;
   --input-focus-border: #0077cc;
+  --table-bg: #e5e5e5;
 }
 
 .dark-mode {
@@ -48,6 +49,7 @@
   --condition-bg: #332e1f;
   --condition-border: #5a5233;
   --condition-active-bg: #331a1a;
+  --table-bg: #333333;
   --condition-active-border: #662222;
   --condition-active-color: #ff6666;
   --output-bg: #272727;
@@ -116,7 +118,7 @@ body {
 }
 
 p, li {
-  font-size: 85%;
+  font-size: 90%;
 }
 
 a, a:link {
@@ -133,6 +135,7 @@ table {
   border-collapse: separate;
   border-spacing: 1px;
   font-size: 80%;
+  background-color: var(--table-bg);
 }
 
 main {
