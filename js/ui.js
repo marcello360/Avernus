@@ -200,24 +200,61 @@ export function renderTerrain(data) {
 export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
     const radius = visibility === "clear" ? 2 : 1;
     
+    // Get the currently selected hex
+    const hexSelect = document.getElementById('hexSelect');
+    const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    
     const hexFeatures = {};
     
     allNearbyHexes.forEach(hex => {
       hexFeatures[hex] = [];
     });
     
+    // Add volcanoes in the current hex even if not in allNearbyHexes
+    if (currentHex && !hexFeatures[currentHex]) {
+      hexFeatures[currentHex] = [];
+    }
+    
     mountainHexes.forEach(hex => {
       if (hexFeatures[hex.hexname]) {
-        hexFeatures[hex.hexname].push("Mountain");
+        hexFeatures[hex.hexname].push("Mountains");
       }
     });
     
     volcanoHexes.forEach(hex => {
-      if (hexFeatures[hex.hexname]) {
+      // Always show volcanoes in their current hex
+      if (hex.hexname === currentHex) {
+        hexFeatures[hex.hexname] = hexFeatures[hex.hexname] || [];
+        hexFeatures[hex.hexname].push("Volcano");
+      } else if (hexFeatures[hex.hexname]) {
         hexFeatures[hex.hexname].push("Volcano");
       }
     });
     
+    // Special case for C4: Pillar of Skulls - visible from anywhere including C4 itself
+    if (allNearbyHexes.includes('C4') || currentHex === 'C4') {
+      hexFeatures['C4'] = hexFeatures['C4'] || [];
+      if (!hexFeatures['C4'].includes('Pillar of Skulls')) {
+        hexFeatures['C4'].push('Pillar of Skulls');
+      }
+    }
+    
+    // Special case for F4: Bloody Cyst
+    if (currentHex === 'F4') {
+      hexFeatures['F4'] = hexFeatures['F4'] || [];
+      if (!hexFeatures['F4'].includes('Bloody Cyst')) {
+        hexFeatures['F4'].push('Bloody Cyst');
+      }
+    }
+    
+    // Special case for J6: Mesa Encampment
+    if (currentHex === 'J6') {
+      hexFeatures['J6'] = hexFeatures['J6'] || [];
+      if (!hexFeatures['J6'].includes('Mesa Encampment')) {
+        hexFeatures['J6'].push('Mesa Encampment');
+      }
+    }
+
     const hexesWithFeatures = Object.keys(hexFeatures)
       .filter(hex => hexFeatures[hex].length > 0)
       .map(hex => ({
