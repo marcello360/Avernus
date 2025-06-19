@@ -109,7 +109,7 @@ function showToast(message) {
   const toastContainer = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.textContent = message;
+  toast.innerHTML = message;
   
   toastContainer.appendChild(toast);
   
@@ -184,6 +184,30 @@ async function restoreUIState() {
     }
   }
 }
+
+window.hideLocation = function(locationId, hexName) {
+  let visibleLocationIds = [];
+  try {
+    const storedIds = localStorage.getItem(`visibleLocations_${hexName}`);
+    if (storedIds) {
+      visibleLocationIds = JSON.parse(storedIds);
+    }
+  } catch (e) {
+    console.error('Error parsing visible locations:', e);
+  }
+  
+  visibleLocationIds = visibleLocationIds.filter(id => id !== locationId);
+  localStorage.setItem(
+    `visibleLocations_${hexName}`,
+    JSON.stringify(visibleLocationIds)
+  );
+  
+  const hexSelect = document.getElementById('hexSelect');
+  const currentHexId = hexSelect.value;
+  fetchLocations(currentHexId).then(locations => {
+    renderLocations(locations);
+  });
+};
 
 export async function initializeApp() {
   await populateHexes();
@@ -285,28 +309,92 @@ export async function initializeApp() {
     
     setTimeout(async () => {
       rollButton.classList.remove('rolling');
+      let toastMessage = '';
       
       if (maintainCondition) {
         const conditionEnded = roll === 1;
         
         if (conditionEnded) {
-          showToast(`Rolled ${roll} - Condition ended`);
+          toastMessage = `Rolled ${roll} - Condition ended`;
           await updateConditionStatus(false);
         } else {
-          showToast(`Rolled ${roll} - Condition maintained`);
+          toastMessage = `Rolled ${roll} - Condition maintained`;
         }
       } else {
         const hasCondition = roll === 1;
         
         if (hasCondition) {
-          showToast(`Rolled ${roll} - New Condition triggered`);
+          toastMessage = `Rolled ${roll} - New Condition triggered`;
           await rollForSpecificCondition();
         } else {
-          showToast(`Rolled ${roll} - No condition`);
+          toastMessage = `Rolled ${roll} - No condition`;
           await updateConditionStatus(false);
         }
       }
+      
+      const locationRoll = await rollForLocation();
+      if (locationRoll.message) {
+        toastMessage += `<br>${locationRoll.message}`;
+      }
+      
+      showToast(toastMessage);
     }, 300); // Match animation duration
+  }
+  
+  async function rollForLocation() {
+    const hexSelect = document.getElementById('hexSelect');
+    const currentHexId = hexSelect.value;
+    const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    
+    const visibilityExceptions = ['C4', 'F4', 'J6']; //Locations always visible
+    const isExceptionHex = visibilityExceptions.includes(currentHex);
+    
+    if (isExceptionHex) {
+      return { revealed: false, message: '' };
+    }
+    
+    const locations = await fetchLocations(currentHexId);
+    if (!locations || locations.length === 0) {
+      return { revealed: false, message: '' };
+    }
+    
+    let visibleLocationIds = [];
+    try {
+      const storedIds = localStorage.getItem(`visibleLocations_${currentHex}`);
+      if (storedIds) {
+        visibleLocationIds = JSON.parse(storedIds);
+      }
+    } catch (e) {
+      console.error('Error parsing visible locations:', e);
+    }
+    
+    const hiddenLocations = locations.filter(loc => !visibleLocationIds.includes(loc.id));
+    
+    if (hiddenLocations.length === 0) {
+      return { revealed: false, message: '' };
+    }
+    
+    const roll = Math.floor(Math.random() * 12) + 1;
+    let message = `Location roll: ${roll}`;
+    
+    if (roll === 1 && hiddenLocations.length > 0) {
+      const randomIndex = Math.floor(Math.random() * hiddenLocations.length);
+      const locationToReveal = hiddenLocations[randomIndex];
+      
+      visibleLocationIds.push(locationToReveal.id);
+      localStorage.setItem(
+        `visibleLocations_${currentHex}`,
+        JSON.stringify(visibleLocationIds)
+      );
+      
+      message += ` - Location revealed: ${locationToReveal.locationname}`;
+      
+      renderLocations(locations);
+      
+      return { revealed: true, message };
+    }
+    
+    return { revealed: false, message };
   }
   
   async function rollForSpecificCondition() {
