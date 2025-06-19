@@ -144,7 +144,7 @@ export function renderTerrain(data) {
     const hexSelect = document.getElementById('hexSelect');
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
     
-    const visibilityExceptions = ['C4', 'F4', 'J6'];
+    const visibilityExceptions = ['C2', 'F4', 'J6'];
     const isExceptionHex = visibilityExceptions.includes(currentHex);
     
     let visibleLocationIds = [];
@@ -176,7 +176,7 @@ export function renderTerrain(data) {
             <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
               <div class="header-content">
                 <h3>${location.locationname}</h3>
-                <button class="hide-location-btn" ${isException ? 'disabled' : ''}
+                <button class="hide-location-btn" ${isException ? 'disabled' : ''} 
                   onclick="event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')" 
                   ontouchend="event.preventDefault(); event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')">
                   Hide Location
@@ -208,8 +208,8 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
     
     const hexSelect = document.getElementById('hexSelect');
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
-    
     const hexFeatures = {};
+    const volcanoHexNames = ['H2', 'H6', 'I5'];
     
     allNearbyHexes.forEach(hex => {
       hexFeatures[hex] = [];
@@ -230,11 +230,18 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
       hexFeatures[hex.hexname].push("Volcano");
     });
     
-    // Special case for C4: Pillar of Skulls
-    if (allNearbyHexes.includes('C4') || currentHex === 'C4') {
-      hexFeatures['C4'] = hexFeatures['C4'] || [];
-      if (!hexFeatures['C4'].includes('Pillar of Skulls')) {
-        hexFeatures['C4'].push('Pillar of Skulls');
+    if (currentHex && volcanoHexNames.includes(currentHex)) {
+      hexFeatures[currentHex] = hexFeatures[currentHex] || [];
+      if (!hexFeatures[currentHex].includes("Volcano")) {
+        hexFeatures[currentHex].push("Volcano");
+      }
+    }
+    
+    // Special case for C2: Pillar of Skulls
+    if (allNearbyHexes.includes('C2') || currentHex === 'C2') {
+      hexFeatures['C2'] = hexFeatures['C2'] || [];
+      if (!hexFeatures['C2'].includes('Pillar of Skulls')) {
+        hexFeatures['C2'].push('Pillar of Skulls');
       }
     }
     
