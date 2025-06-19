@@ -315,19 +315,19 @@ export async function initializeApp() {
         const conditionEnded = roll === 1;
         
         if (conditionEnded) {
-          toastMessage = `Rolled ${roll} - Condition ended`;
+          toastMessage = `Condition Roll: ${roll} - Condition ended`;
           await updateConditionStatus(false);
         } else {
-          toastMessage = `Rolled ${roll} - Condition maintained`;
+          toastMessage = `Condition Roll: ${roll} - Condition maintained`;
         }
       } else {
         const hasCondition = roll === 1;
         
         if (hasCondition) {
-          toastMessage = `Rolled ${roll} - New Condition triggered`;
+          toastMessage = `Condition Roll: ${roll} - New Condition triggered`;
           await rollForSpecificCondition();
         } else {
-          toastMessage = `Rolled ${roll} - No condition`;
+          toastMessage = `Condition Roll: ${roll}`;
           await updateConditionStatus(false);
         }
       }
