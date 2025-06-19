@@ -326,7 +326,7 @@ h1 {
   box-shadow: 0 2px 4px var(--card-shadow);
 }
 
-/* Condition Card Styling with Red Highlight */
+/* Condition Card Styling */
 .condition-card {
   border: 2px solid #e53935;
   box-shadow: 0 2px 8px rgba(229, 57, 53, 0.3);
@@ -387,14 +387,12 @@ h1 {
   font-weight: bold;
 }
 
-/* Cards are collapsed by default */
 .card-body {
   display: none;
   padding: 1rem;
   background: var(--main-bg);
 }
 
-/* When expanded */
 .card.expanded .card-body {
   display: block;
 }
@@ -531,8 +529,6 @@ select:disabled {
 #locations-block {
   order: 4;
 }
-
-/* Responsive Design - Tablet & Mobile Adjustments */
 
 /* Large tablets (portrait) */
 @media (max-width: 992px) {
