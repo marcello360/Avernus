@@ -129,6 +129,13 @@ a:hover {
   text-decoration: none;
 }
 
+table {
+  border-collapse: separate;
+  border-spacing: 1px;
+  font-size: 80%;
+  text-align: left;
+}
+
 main {
   max-width: 800px;
   margin: auto;
