@@ -10,7 +10,6 @@ const headers = {
 export async function populateHexes() {
   const hexSelect = document.getElementById('hexSelect');
   
-  // Fetch all hexes from Supabase
   const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=id,hexname`, { headers });
   const hexes = await res.json();
   
