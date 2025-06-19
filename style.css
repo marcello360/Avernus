@@ -370,10 +370,48 @@ h1 {
 .header-content {
   flex: 1;
   text-align: left;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .toggle-icon {
   margin-left: 10px;
+}
+
+.hide-location-btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+  background-color: var(--small-button-bg);
+  border: 1px solid var(--small-button-border);
+  border-radius: 3px;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.hide-location-btn:hover {
+  background-color: var(--small-button-hover);
+}
+
+.hide-location-btn:active {
+  background-color: var(--small-button-active);
+}
+
+.hide-location-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--button-disabled-bg);
+  color: var(--button-text);
+}
+
+.no-locations {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-color);
+  font-style: italic;
 }
 
 .card-header h2,
