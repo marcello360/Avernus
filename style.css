@@ -115,6 +115,20 @@ body {
   -webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape */
 }
 
+p {
+  font-size: 80%;
+}
+
+a, a:link {
+  color: #6699ff;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: #ff3300;
+  text-decoration: none;
+}
+
 main {
   max-width: 800px;
   margin: auto;
