@@ -140,23 +140,58 @@ export function renderTerrain(data) {
     
     const previousCards = locationsEl.querySelectorAll('.card');
     const expandedStates = Array.from(previousCards).map(card => card.classList.contains('expanded'));
+
+    const hexSelect = document.getElementById('hexSelect');
+    const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    
+    const visibilityExceptions = ['C4', 'F4', 'J6'];
+    const isExceptionHex = visibilityExceptions.includes(currentHex);
+    
+    let visibleLocationIds = [];
+    try {
+      const storedIds = localStorage.getItem(`visibleLocations_${currentHex}`);
+      if (storedIds) {
+        visibleLocationIds = JSON.parse(storedIds);
+      }
+    } catch (e) {
+      console.error('Error parsing visible locations:', e);
+    }
+    
+    if (isExceptionHex) {
+      visibleLocationIds = locationsData.map(loc => loc.id);
+    }
     
     let html = '';
     
     if (Array.isArray(locationsData) && locationsData.length > 0) {
-      html = locationsData.map((location, index) => `
-        <div class="card" data-location-id="${location.id}">
-          <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
-            <div class="header-content">
-              <h3>${location.locationname}</h3>
+      const locationsToShow = isExceptionHex ? locationsData : 
+        locationsData.filter(location => visibleLocationIds.includes(location.id));
+      
+      if (locationsToShow.length > 0) {
+        html = locationsToShow.map((location) => {
+          const isException = isExceptionHex;
+          
+          return `
+          <div class="card" data-location-id="${location.id}">
+            <div class="card-header" onclick="this.parentElement.classList.toggle('expanded')" ontouchend="event.preventDefault(); this.parentElement.classList.toggle('expanded')">
+              <div class="header-content">
+                <h3>${location.locationname}</h3>
+                <button class="hide-location-btn" ${isException ? 'disabled' : ''} 
+                  onclick="event.stopPropagation(); window.hideLocation(${location.id}, '${currentHex}')">
+                  Hide Location
+                </button>
+              </div>
+              <span class="toggle-icon">+</span>
             </div>
-            <span class="toggle-icon">+</span>
+            <div class="card-body">
+              <p>${location.locationdescription}</p>
+            </div>
           </div>
-          <div class="card-body">
-            <p>${location.locationdescription}</p>
-          </div>
-        </div>
-      `).join('');
+        `;
+        }).join('');
+      } else {
+        html = '<p class="no-locations">No visible locations in this hex.</p>';
+      }
     }
     
     locationsEl.innerHTML = html;
