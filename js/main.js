@@ -52,6 +52,9 @@ async function onHexChange() {
   lastSelectedHexId = hexId;
   localStorage.setItem('selectedHexId', hexId);
   const savedCardStates = saveCardStates();
+  
+  const revealAllLocationsButton = document.getElementById('revealAllLocationsButton');
+  revealAllLocationsButton.disabled = !hexId;
 
   if (previousHexId !== null && previousHexId !== hexId) {
     clearEncounterCards();
@@ -337,6 +340,29 @@ export async function initializeApp() {
   
   document.getElementById('maintainConditionCheck').addEventListener('change', handleMaintainConditionChange);
   document.getElementById('followingStyxCheck').addEventListener('change', handleFollowingStyxChange);
+
+  const revealAllLocationsButton = document.getElementById('revealAllLocationsButton');
+  revealAllLocationsButton.addEventListener('click', async function() {
+    const hexId = hexSelect.value;
+    const hexName = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    
+    if (!hexId || !hexName) return;
+    
+    const locationsData = await fetchLocations(hexId);
+    
+    if (Array.isArray(locationsData) && locationsData.length > 0) {
+      const visibleLocationIds = locationsData.map(loc => loc.id);
+      localStorage.setItem(
+        `visibleLocations_${hexName}`,
+        JSON.stringify(visibleLocationIds)
+      );
+      
+      renderLocations(locationsData);
+      showToast(`All locations in ${hexName} revealed`);
+    } else {
+      showToast('No locations found in this hex');
+    }
+  });
 
   watchSelect.addEventListener('change', () => {
     checkSelections();
