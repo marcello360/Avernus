@@ -18,6 +18,10 @@
   --condition-active-bg: #fff1f1;
   --condition-active-border: #fbb8b8;
   --condition-active-color: #c00;
+  --encounter-bg: #fffbf0;
+  --encounter-border: #FFCC00;
+  --encounter-active-bg: #fffbf0;
+  --encounter-active-border: #ffcc33;
   --output-bg: #f0f0f0;
   --toast-bg: rgba(0, 0, 0, 0.7);
   --toast-color: white;
@@ -317,13 +321,44 @@ h1 {
   cursor: not-allowed;
 }
 
-/* Collapsible Card Styling */
+/* Collapsible Card Components */
 .card {
+  background-color: var(--main-bg);
   border: 1px solid var(--card-border);
-  border-radius: 5px;
-  margin-bottom: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px var(--card-shadow);
+  margin-bottom: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 4px var(--card-shadow);
+  max-height: 300px;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.encounter-card {
+  background-color: var(--encounter-bg);
+  border: 2px solid var(--encounter-border);
+}
+
+.encounter-card .card-body {
+  padding-bottom: 10px;
+}
+
+.encounter-card .small-button {
+  margin: 10px 0 0 0;
+}
+
+.allegiance-result {
+  margin-top: 10px;
+  font-style: italic;
+  border-top: 1px solid var(--card-border);
+  padding-top: 10px;
+}
+
+.encounter-source {
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-top: 10px;
+  border-top: 1px solid var(--card-border);
+  padding-top: 10px;
 }
 
 /* Condition Card Styling */
