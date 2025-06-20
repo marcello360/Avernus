@@ -82,7 +82,7 @@ async function onHexChange() {
   const restrictedHexes = ['D5', 'E5', 'F5'];
   const maintainCondition = document.getElementById('maintainConditionCheck').checked;
   
-  if (!maintainCondition && hexName && restrictedHexes.includes(hexName)) {
+  if (hexName && restrictedHexes.includes(hexName)) {
     if (originalWeatherValue === null) {
       originalWeatherValue = weatherSelect.value;
     }
@@ -308,7 +308,7 @@ export async function initializeApp() {
     
     localStorage.setItem('maintainConditionChecked', maintainCondition);
      
-    if (!maintainCondition && hexName && restrictedHexes.includes(hexName)) {
+    if (hexName && restrictedHexes.includes(hexName)) {
       if (originalWeatherValue === null) {
         originalWeatherValue = weatherSelect.value;
       }
