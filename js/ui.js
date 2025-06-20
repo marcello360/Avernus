@@ -1,3 +1,13 @@
+import { rollForAllegiance } from './supabase.js';
+
+export function clearEncounterCards() {
+  const encounterCards = document.querySelectorAll('.encounter-card');
+  encounterCards.forEach(card => {
+    card.parentNode.removeChild(card);
+  });
+  console.log('Cleared existing encounter cards');
+}
+
 function decimalToFraction(decimal) {
   const fractions = {
     '0.25': '¼',
@@ -46,13 +56,189 @@ export function updateConditionCard() {
     if (quickRefBar) {
       conditionContainer = document.createElement('div');
       conditionContainer.id = 'condition-container';
-      quickRefBar.parentNode.insertBefore(conditionContainer, quickRefBar.nextSibling);
+      quickRefBar.appendChild(conditionContainer);
     }
   }
   
   if (conditionContainer) {
     conditionContainer.innerHTML = conditionRefHTML;
   }
+}
+
+export function renderEncounterCard(encounters) {
+  const outputArea = document.getElementById('outputArea');
+  if (!outputArea) return;
+  
+  const mountEl = document.getElementById('mountains-block');
+  let encounterContainer = document.getElementById('encounter-container');
+  if (encounterContainer) {
+    encounterContainer.remove();
+  } else {
+    encounterContainer = document.createElement('div');
+    encounterContainer.id = 'encounter-container';
+    encounterContainer.className = 'encounter-container';
+  }
+  
+  setTimeout(() => {
+    const visibilityCard = document.querySelector('.visibility-card');
+    
+    if (visibilityCard) {
+      visibilityCard.after(encounterContainer);
+    } else if (mountEl) {
+      mountEl.after(encounterContainer);
+    } else {
+      outputArea.appendChild(encounterContainer);
+    }
+    
+    populateEncounterCards(encounterContainer, encounters);
+  }, 0);
+  
+  return encounterContainer;
+}
+
+function populateEncounterCards(container, encounters) {
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  const encounterArray = Array.isArray(encounters) ? encounters : (encounters ? [encounters] : []);
+  
+  if (encounterArray.length === 0) {
+    return;
+  }
+  
+  encounterArray.forEach(encounter => {
+    const normalizedEncounter = encounter;
+    
+    const encounterCard = document.createElement('div');
+    encounterCard.className = 'encounter-card card';
+    encounterCard.style.borderColor = '#FFCC00'; // Yellow stroke
+    
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    header.onclick = function() { this.parentElement.classList.toggle('expanded'); };
+    
+    const headerContent = document.createElement('div');
+    headerContent.className = 'header-content';
+
+    const title = document.createElement('h3');
+    
+    let titleText = 'Encounter';
+    if (normalizedEncounter.encountertypeid === 1) {
+      titleText = 'Designed Encounter';
+    } else if (normalizedEncounter.isWarlord) {
+      titleText = 'Warlord Encounter';
+    } else if (normalizedEncounter.encountertypeid === 4) {
+      titleText = 'Environmental Encounter';
+    } else if (normalizedEncounter.encountertypeid === 3) {
+      titleText = 'Styx Encounter';
+    } else if (normalizedEncounter.encountertypeid === 5) {
+      titleText = 'Dangerous Devil Encounter';
+    } else {
+      titleText = 'Normal Encounter';
+    }
+    
+    title.textContent = titleText;
+    headerContent.appendChild(title);
+    
+    const subtitle = document.createElement('h4');
+    subtitle.className = 'encounter-subtitle';
+    
+    let subtitleText = '';
+    
+    if (normalizedEncounter.isSpecialEncounter || 
+        normalizedEncounter.isWarlord ||
+        (normalizedEncounter.encountersource && normalizedEncounter.encountersource.includes('Encounters')) ||
+        normalizedEncounter.encounterdescription) {
+      subtitleText = normalizedEncounter.encountername || '';
+    } else {
+      let classPrefix = '';
+      if (normalizedEncounter.encounterClass === 'Lair') {
+        classPrefix = 'the Lair of ';
+      } else if (normalizedEncounter.encounterClass === 'Tracks') {
+        classPrefix = `${normalizedEncounter.tracksAge}-day-old Tracks of `;
+      }
+      
+      subtitleText = `Encountered ${classPrefix}${normalizedEncounter.amount} ${normalizedEncounter.encountername || 'creatures'}`;
+    }
+    
+    const toggleIcon = document.createElement('span');
+    toggleIcon.className = 'toggle-icon';
+    toggleIcon.textContent = '+';
+    
+    header.appendChild(headerContent);
+    header.appendChild(toggleIcon);
+    
+    const cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+    
+    if (subtitleText) {
+      const subtitleElement = document.createElement('h3');
+      subtitleElement.className = 'encounter-subtitle';
+      subtitleElement.textContent = subtitleText;
+      cardBody.appendChild(subtitleElement);
+    }
+    
+    const isEnvironmentEncounter = normalizedEncounter.encountertypeid === 4; // Environment type is 4
+    const isTracksEncounter = normalizedEncounter.encounterClass === 'Tracks';
+    const hasEncounterSource = normalizedEncounter.encountersource && normalizedEncounter.encountersource.includes('Encounters');
+    
+    if (normalizedEncounter.reaction && !isEnvironmentEncounter && (isTracksEncounter || !hasEncounterSource)) {
+      const reactionSection = document.createElement('p');
+      let reactionText = normalizedEncounter.reaction;
+      
+      reactionSection.innerHTML = `<strong>Reaction:</strong> ${reactionText}`;
+      cardBody.appendChild(reactionSection);
+    }
+    
+    if (normalizedEncounter.distance) {
+      const distanceSection = document.createElement('p');
+      distanceSection.innerHTML = `<strong>Distance:</strong> ${normalizedEncounter.distance} feet`;
+      cardBody.appendChild(distanceSection);
+    }
+    
+    if (normalizedEncounter.encounterdescription) {
+      const descriptionSection = document.createElement('p');
+      descriptionSection.innerHTML = normalizedEncounter.encounterdescription;
+      cardBody.appendChild(descriptionSection);
+    }
+    
+    if (normalizedEncounter.encountersource) {
+      const sourceSection = document.createElement('p');
+      sourceSection.innerHTML = `<em>Source: ${normalizedEncounter.encountersource}</em>`;
+      sourceSection.className = 'encounter-source';
+      cardBody.appendChild(sourceSection);
+    }
+    
+    const allegianceButton = document.createElement('button');
+    allegianceButton.textContent = 'Roll for Allegiance';
+    allegianceButton.className = 'small-button';
+    allegianceButton.id = `allegiance-${encounter.id}`; // Set ID based on encounter ID
+    allegianceButton.onclick = async function() {
+      allegianceButton.disabled = true;
+      try {
+        const result = await rollForAllegiance(encounter.id);
+        if (result) {
+          const allegianceSection = document.createElement('p');
+          allegianceSection.innerHTML = `<strong>Allegiance:</strong> ${result}`;
+          allegianceSection.className = 'allegiance-result';
+          cardBody.appendChild(allegianceSection);
+          allegianceButton.style.display = 'none';
+        }
+      } catch (error) {
+        console.error('Error rolling for allegiance:', error);
+      } finally {
+        allegianceButton.disabled = false;
+      }
+    };
+    
+    cardBody.appendChild(allegianceButton);
+    
+    encounterCard.appendChild(header);
+    encounterCard.appendChild(cardBody);
+    
+    container.appendChild(encounterCard);
+  });
 }
 
 export function renderTerrain(data) {
@@ -121,6 +307,12 @@ export function renderTerrain(data) {
       </div>
     `).join("");
   
+    const encounterContainer = document.getElementById('encounter-container');
+    let savedEncounterHTML = '';
+    if (encounterContainer) {
+      savedEncounterHTML = encounterContainer.outerHTML;
+    }
+    
     outputArea.innerHTML = `
       ${quickRefHTML}
       <div id="condition-container"></div>
@@ -130,6 +322,15 @@ export function renderTerrain(data) {
       <div id="mountains-block"></div>
       <div id="locations-block"></div>
     `;
+    
+    if (savedEncounterHTML) {
+      const mountainsBlock = document.getElementById('mountains-block');
+      if (mountainsBlock) {
+        mountainsBlock.insertAdjacentHTML('afterend', savedEncounterHTML);
+      } else {
+        outputArea.insertAdjacentHTML('beforeend', savedEncounterHTML);
+      }
+    }
     
     updateConditionCard();
   }
@@ -302,12 +503,28 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
       const previousCard = mountEl.querySelector('.card');
       const wasExpanded = previousCard ? previousCard.classList.contains('expanded') : false;
       
+      const encounterContainer = document.getElementById('encounter-container');
+      let savedEncounterContainer = null;
+      if (encounterContainer) {
+        encounterContainer.remove();
+        savedEncounterContainer = encounterContainer;
+      }
+      
       mountEl.innerHTML = html;
       
       if (wasExpanded) {
         const newCard = mountEl.querySelector('.card');
         if (newCard) {
           newCard.classList.add('expanded');
+        }
+      }
+      
+      if (savedEncounterContainer) {
+        const visibilityCard = mountEl.querySelector('.visibility-card');
+        if (visibilityCard) {
+          visibilityCard.after(savedEncounterContainer);
+        } else {
+          mountEl.after(savedEncounterContainer);
         }
       }
     }
