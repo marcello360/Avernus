@@ -5,7 +5,6 @@ export function clearEncounterCards() {
   encounterCards.forEach(card => {
     card.parentNode.removeChild(card);
   });
-  console.log('Cleared existing encounter cards');
 }
 
 function decimalToFraction(decimal) {
@@ -224,6 +223,25 @@ function populateEncounterCards(container, encounters) {
           allegianceSection.className = 'allegiance-result';
           cardBody.appendChild(allegianceSection);
           allegianceButton.style.display = 'none';
+          
+          const rerollButton = document.createElement('button');
+          rerollButton.textContent = 'Reroll Allegiance';
+          rerollButton.className = 'small-button';
+          rerollButton.onclick = async function() {
+            rerollButton.disabled = true;
+            try {
+              const newResult = await rollForAllegiance(encounter.id);
+              if (newResult) {
+                allegianceSection.innerHTML = `<strong>Allegiance:</strong> ${newResult}`;
+                showToast(`Allegiance rerolled: ${newResult}`);
+              }
+            } catch (error) {
+              console.error('Error rerolling allegiance:', error);
+            } finally {
+              rerollButton.disabled = false;
+            }
+          };
+          cardBody.appendChild(rerollButton);
         }
       } catch (error) {
         console.error('Error rolling for allegiance:', error);
@@ -345,7 +363,7 @@ export function renderTerrain(data) {
     const hexSelect = document.getElementById('hexSelect');
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
     
-    const visibilityExceptions = ['C2', 'F4', 'J6'];
+    const visibilityExceptions = ['C2', 'F4', 'J6', 'H3'];
     const isExceptionHex = visibilityExceptions.includes(currentHex);
     
     let visibleLocationIds = [];
