@@ -81,3 +81,107 @@ export async function fetchLocations(hexId) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/locations?select=id,locationname,locationdescription&hexid=eq.${hexId}`, { headers });
   return await res.json();
 }
+
+export async function fetchEncountersByType(encounterId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/encounters?select=*&encountertypeid=eq.${encounterId}`, { headers });
+  return await res.json();
+}
+
+export async function fetchEncounterById(id) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/encounters?select=*&id=eq.${id}`, { headers });
+  return await res.json();
+}
+
+export async function fetchEncounterByRange(min, max, encounterTypeId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/encounters?select=*&encountertypeid=eq.${encounterTypeId}&minroll=lte.${max}&maxroll=gte.${min}`, { headers });
+  const data = await res.json();
+  return data;
+}
+
+export async function fetchFactions(factionTypeId, minRoll) {
+  if (minRoll) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/factions?select=*&factiontypeid=eq.${factionTypeId}&minroll=eq.${minRoll}`, { headers });
+    return await res.json();
+  } else {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/factions?select=*&factiontypeid=eq.${factionTypeId}`, { headers });
+    return await res.json();
+  }
+}
+
+export async function fetchFactionByRange(min, max, factionTypeId) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/factions?select=*&factiontypeid=eq.${factionTypeId}&minroll=lte.${max}&maxroll=gte.${min}`, { headers });
+  return await res.json();
+}
+
+export async function fetchHexInfo(hexId) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/hexes?select=*&id=eq.${hexId}`, { headers });
+    const hexData = await res.json();
+    
+    if (hexData && hexData.length > 0) {
+      hexData[0].terrains = [];
+      
+      try {
+        const terrainRelRes = await fetch(`${SUPABASE_URL}/rest/v1/hexterrains?select=terrainid&hexid=eq.${hexId}`, { headers });
+        
+        if (terrainRelRes.ok) {
+          const terrainRelations = await terrainRelRes.json();
+          
+          if (Array.isArray(terrainRelations) && terrainRelations.length > 0) {
+            const terrainIds = terrainRelations.map(relation => relation.terrainid);
+            hexData[0].terrains = terrainIds;
+          }
+        }
+      } catch (terrainError) {
+        console.error(`Error fetching terrain relations for hex ${hexId}:`, terrainError);
+      }
+    } else {
+      console.warn(`No hex found with ID ${hexId}`);
+    }
+    
+    return hexData;
+  } catch (error) {
+    console.error(`Error in fetchHexInfo for hex ${hexId}:`, error);
+    return [];
+  }
+}
+
+export async function fetchTerrainInfo(terrainId) {
+  if (terrainId) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/terrains?select=*&id=eq.${terrainId}`, { headers });
+    return await res.json();
+  } else {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/terrains?select=*`, { headers });
+    return await res.json();
+  }
+}
+
+export async function rollForAllegiance() {
+  const roll = Math.floor(Math.random() * 20) + 1;
+  let allegiance = '';
+  
+  try {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/factions`, { headers });
+    
+    const factions = await response.json();
+    
+    if (roll >= 1 && roll <= 5) {
+      const warlordRoll = Math.floor(Math.random() * 7) + 1;
+      const warlordFaction = factions.find(f => f.factiontypeid === 2 && f.minroll === warlordRoll);
+      
+      if (warlordFaction) {
+        allegiance = `Warlord: ${warlordFaction.factionname}`;
+      }
+    } else {
+      const allegianceFaction = factions.find(f => f.factiontypeid === 3 && roll >= f.minroll && roll <= f.maxroll);
+      
+      if (allegianceFaction) {
+        allegiance = allegianceFaction.factionname;
+      }
+    }
+  } catch (error) {
+    console.error('Error rolling for allegiance:', error);
+  }
+  
+  return allegiance;
+}
