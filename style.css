@@ -474,6 +474,11 @@ h1 {
   transform: rotate(45deg);
 }
 
+.card.expanded {
+  height: auto;
+  max-height: none;
+}
+
 /* Features list */
 .features-list {
   list-style: none;
