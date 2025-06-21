@@ -150,19 +150,16 @@ function showToast(message) {
 function rollWeather() {
   if (weatherSelect.disabled) return;  
 
-  weatherRollButton.classList.add('rolling');  
   const roll = Math.floor(Math.random() * 6) + 1;  
   const newWeather = roll === 1 ? 'clear' : 'typical';
   
-  setTimeout(() => {
-    weatherSelect.value = newWeather;
-    
-    const event = new Event('change');
-    weatherSelect.dispatchEvent(event);
-    weatherRollButton.classList.remove('rolling');
-    
-    showToast(`Rolled ${roll} (${newWeather} weather)`);
-  }, 300);
+  weatherSelect.value = newWeather;
+  
+  const event = new Event('change');
+  weatherSelect.dispatchEvent(event);
+  
+  showToast(`Rolled ${roll} (${newWeather} weather)`);
+
 }
 
 function toggleDarkMode() {
@@ -343,8 +340,25 @@ export async function initializeApp() {
   function handleFollowingStyxChange() {
     const followingStyx = document.getElementById('followingStyxCheck').checked;
     localStorage.setItem('followingStyxChecked', followingStyx);
+    
+    // If styx is checked, uncheck pit of shummrath
+    if (followingStyx) {
+      document.getElementById('followingPitCheck').checked = false;
+      localStorage.setItem('followingPitChecked', false);
+    }
   }
   
+  function handleFollowingPitChange() {
+    const followingPit = document.getElementById('followingPitCheck').checked;
+    localStorage.setItem('followingPitChecked', followingPit);
+    
+    // If pit is checked, uncheck styx
+    if (followingPit) {
+      document.getElementById('followingStyxCheck').checked = false;
+      localStorage.setItem('followingStyxChecked', false);
+    }
+  }
+
   function handleExplorationModeChange() {
     const explorationMode = document.getElementById('explorationModeCheck').checked;
     localStorage.setItem('explorationModeChecked', explorationMode);
@@ -352,6 +366,7 @@ export async function initializeApp() {
   
   document.getElementById('maintainConditionCheck').addEventListener('change', handleMaintainConditionChange);
   document.getElementById('followingStyxCheck').addEventListener('change', handleFollowingStyxChange);
+  document.getElementById('followingPitCheck').addEventListener('change', handleFollowingPitChange);
   document.getElementById('explorationModeCheck').addEventListener('change', handleExplorationModeChange);
 
   const revealAllLocationsButton = document.getElementById('revealAllLocationsButton');
@@ -583,7 +598,7 @@ export async function initializeApp() {
       );
       
       message = `Location revealed: ${locationToReveal.locationname}`;
-      
+      +
       renderLocations(locations);
       
       return { revealed: true, message };
