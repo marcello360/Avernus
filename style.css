@@ -497,7 +497,7 @@ h1 {
 /* Checkbox styling */
 .checkbox-container {
   grid-column: span 2;
-  margin-bottom: 1rem;
+  margin-bottom: 0px;
   display: flex;
   align-items: center;
 }
