@@ -260,6 +260,11 @@ async function restoreUIState() {
     document.getElementById('followingStyxCheck').checked = followingStyxChecked === 'true';
   }
   
+  const followingPitChecked = localStorage.getItem('followingPitChecked');
+  if (followingPitChecked !== null) {
+    document.getElementById('followingPitCheck').checked = followingPitChecked === 'true';
+  }
+  
   const explorationModeChecked = localStorage.getItem('explorationModeChecked');
   if (explorationModeChecked !== null) {
     document.getElementById('explorationModeCheck').checked = explorationModeChecked === 'true';
