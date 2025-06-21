@@ -263,6 +263,13 @@ async function restoreUIState() {
     document.getElementById('followingStyxCheck').checked = followingStyxChecked === 'true';
   }
   
+  const explorationModeChecked = localStorage.getItem('explorationModeChecked');
+  if (explorationModeChecked !== null) {
+    document.getElementById('explorationModeCheck').checked = explorationModeChecked === 'true';
+  } else {
+    document.getElementById('explorationModeCheck').checked = false;
+  }
+  
   const savedTerrainData = localStorage.getItem('currentTerrainData');
   if (savedTerrainData) {
     try {
@@ -338,8 +345,14 @@ export async function initializeApp() {
     localStorage.setItem('followingStyxChecked', followingStyx);
   }
   
+  function handleExplorationModeChange() {
+    const explorationMode = document.getElementById('explorationModeCheck').checked;
+    localStorage.setItem('explorationModeChecked', explorationMode);
+  }
+  
   document.getElementById('maintainConditionCheck').addEventListener('change', handleMaintainConditionChange);
   document.getElementById('followingStyxCheck').addEventListener('change', handleFollowingStyxChange);
+  document.getElementById('explorationModeCheck').addEventListener('change', handleExplorationModeChange);
 
   const revealAllLocationsButton = document.getElementById('revealAllLocationsButton');
   revealAllLocationsButton.addEventListener('click', async function() {
@@ -479,6 +492,7 @@ export async function initializeApp() {
     const hexSelect = document.getElementById('hexSelect');
     const currentHexId = hexSelect.value;
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
+    const explorationMode = document.getElementById('explorationModeCheck').checked;
     
     const visibilityExceptions = ['C2', 'F4', 'J6']; //Locations always visible
     const isExceptionHex = visibilityExceptions.includes(currentHex);
@@ -508,7 +522,8 @@ export async function initializeApp() {
       return { revealed: false, message: '' };
     }
     
-    const roll = Math.floor(Math.random() * 12) + 1;
+    const dieMax = explorationMode ? 6 : 12;
+    const roll = Math.floor(Math.random() * dieMax) + 1;
     let message = ``;
     
     if (roll === 1 && hiddenLocations.length > 0) {
@@ -583,30 +598,61 @@ export async function initializeApp() {
     const hexName = hexSelect.options[selectedIndex]?.textContent || '';
     const followingStyx = document.getElementById('followingStyxCheck').checked;
     const watchType = document.getElementById('watchSelect').value;
+    const explorationMode = document.getElementById('explorationModeCheck').checked;
     
-    const d10Roll1 = Math.floor(Math.random() * 10) + 1;
-    const d10Roll2 = Math.floor(Math.random() * 10) + 1;
+    let roll1, roll2, message;
     
-    let message = `Encounter Roll: ${d10Roll1}, ${d10Roll2}`;
-    
-    if (d10Roll1 === 1 && d10Roll2 === 1) {
-      message = "New Encounter triggered";
-      const encounter1 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
-      const encounter2 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
-      if (encounter1 && encounter2) {
-        return { hasEncounter: true, message, encounters: [encounter1, encounter2] };
+    if (explorationMode) {
+      // Use 2d5 for exploration mode
+      roll1 = Math.floor(Math.random() * 5) + 1; // 1d5
+      roll2 = Math.floor(Math.random() * 5) + 1; // 1d5
+      message = `Encounter Roll: ${roll1}, ${roll2}`;
+      
+      if (roll1 === 1 && roll2 === 1) {
+        message = "New Encounter triggered (Double 1s)";
+        const encounter1 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        const encounter2 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        if (encounter1 && encounter2) {
+          return { hasEncounter: true, message, encounters: [encounter1, encounter2] };
+        }
+      } else if (roll1 === 1 || roll2 === 1) {
+        message = "New Encounter triggered";
+        const encounter = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        if (encounter) {
+          return { hasEncounter: true, message, encounters: [encounter] };
+        }
+      } else if (roll1 === roll2) {
+        message = "New Encounter triggered";
+        const encounter = await resolveSpecialEncounter();
+        if (encounter) {
+          return { hasEncounter: true, message, encounters: [encounter] };
+        }
       }
-    } else if (d10Roll1 === 1 || d10Roll2 === 1) {
-      message = "New Encounter triggered";
-      const encounter = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
-      if (encounter) {
-        return { hasEncounter: true, message, encounters: [encounter] };
-      }
-    } else if (d10Roll1 === d10Roll2) {
-      message = "New Encounter triggered";
-      const encounter = await resolveSpecialEncounter();
-      if (encounter) {
-        return { hasEncounter: true, message, encounters: [encounter] };
+    } else {
+      // Use 2d10 for normal mode (non-exploration)
+      roll1 = Math.floor(Math.random() * 10) + 1;
+      roll2 = Math.floor(Math.random() * 10) + 1;
+      message = `Encounter Roll: ${roll1}, ${roll2}`;
+      
+      if (roll1 === 1 && roll2 === 1) {
+        message = "New Encounter triggered";
+        const encounter1 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        const encounter2 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        if (encounter1 && encounter2) {
+          return { hasEncounter: true, message, encounters: [encounter1, encounter2] };
+        }
+      } else if (roll1 === 1 || roll2 === 1) {
+        message = "New Encounter triggered";
+        const encounter = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
+        if (encounter) {
+          return { hasEncounter: true, message, encounters: [encounter] };
+        }
+      } else if (roll1 === roll2) {
+        message = "New Encounter triggered";
+        const encounter = await resolveSpecialEncounter();
+        if (encounter) {
+          return { hasEncounter: true, message, encounters: [encounter] };
+        }
       }
     }
     
