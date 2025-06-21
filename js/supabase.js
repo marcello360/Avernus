@@ -78,7 +78,7 @@ export async function fetchVolcanoHexes(hexNames) {
 export async function fetchLocations(hexId) {
   if (!hexId) return [];
   
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/locations?select=id,locationname,locationdescription,onpit,onriver&hexid=eq.${hexId}`, { headers });
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/locations?select=id,locationname,locationdescription,onriver,onpit&hexid=eq.${hexId}`, { headers });
   return await res.json();
 }
 
