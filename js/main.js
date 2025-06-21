@@ -468,7 +468,8 @@ export async function initializeApp() {
       
       // Handle location roll
       const followingStyx = document.getElementById('followingStyxCheck').checked;
-      const locationRoll = await rollForLocation(followingStyx);
+      const followingPit = document.getElementById('followingPitCheck').checked;
+      const locationRoll = await rollForLocation(followingStyx, followingPit);
       if (locationRoll.message) {
         toastMessage += `<br>${locationRoll.message}`;
       }
@@ -489,7 +490,7 @@ export async function initializeApp() {
     }, 300); // Match animation duration
   }
   
-  async function rollForLocation(followingStyx = false) {
+  async function rollForLocation(followingStyx = false, followingPit = false) {
     const hexSelect = document.getElementById('hexSelect');
     const currentHexId = hexSelect.value;
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
@@ -517,18 +518,19 @@ export async function initializeApp() {
       console.error('Error parsing visible locations:', e);
     }
     
-    const hiddenLocations = locations.filter(loc => !visibleLocationIds.includes(loc.id));
+    let remainingHiddenLocations = locations.filter(loc => !visibleLocationIds.includes(loc.id));
     
-    if (hiddenLocations.length === 0) {
+    if (remainingHiddenLocations.length === 0) {
       return { revealed: false, message: '' };
     }
     
     const dieMax = explorationMode ? 6 : 12;
     const roll = Math.floor(Math.random() * dieMax) + 1;
     let message = ``;
+    let hasRevealedLocations = false;
     
     if (followingStyx) {      
-      const riverLocations = hiddenLocations.filter(loc => loc.onriver === true);
+      const riverLocations = remainingHiddenLocations.filter(loc => loc.onriver === true);
       
       if (riverLocations.length > 0) {
         for (const riverLocation of riverLocations) {
@@ -536,20 +538,43 @@ export async function initializeApp() {
           message += `Location revealed: ${riverLocation.locationname}\n`;
         }
         
+        hasRevealedLocations = true;
+        
+        remainingHiddenLocations = locations.filter(loc => !visibleLocationIds.includes(loc.id));
+        
         localStorage.setItem(
           `visibleLocations_${currentHex}`,
           JSON.stringify(visibleLocationIds)
         );
-        
-        renderLocations(locations);
-        
-        return { revealed: true, message };
       }
     }
     
-    if (roll === 1 && hiddenLocations.length > 0) {
-      const randomIndex = Math.floor(Math.random() * hiddenLocations.length);
-      const locationToReveal = hiddenLocations[randomIndex];
+    if (followingPit) {      
+      const pitLocations = remainingHiddenLocations.filter(loc => loc.onpit === true);
+      
+      if (pitLocations.length > 0) {
+        for (const pitLocation of pitLocations) {
+          visibleLocationIds.push(pitLocation.id);
+          message += `Location revealed: ${pitLocation.locationname}\n`;
+        }
+        
+        hasRevealedLocations = true;
+        
+        localStorage.setItem(
+          `visibleLocations_${currentHex}`,
+          JSON.stringify(visibleLocationIds)
+        );
+      }
+    }
+    
+    if (hasRevealedLocations) {
+      renderLocations(locations);
+      return { revealed: true, message };
+    }
+    
+    if (roll === 1 && remainingHiddenLocations.length > 0) {
+      const randomIndex = Math.floor(Math.random() * remainingHiddenLocations.length);
+      const locationToReveal = remainingHiddenLocations[randomIndex];
       
       visibleLocationIds.push(locationToReveal.id);
       localStorage.setItem(
