@@ -671,6 +671,10 @@ export async function initializeApp() {
     const d30Roll = Math.floor(Math.random() * 30) + 1;
     let encounter = await fetchEncounterById(d30Roll, 1); // Type 1 = special encounters
     
+    const hexId = hexSelect.value;
+    const hexResponse = await fetchHexInfo(hexId);
+    const hexInfo = hexResponse && hexResponse.length > 0 ? hexResponse[0] : null;
+    
     if (encounter) {
       // Special case for roll of Elturians - attach a faction
       if (d30Roll === 30) {
@@ -686,7 +690,7 @@ export async function initializeApp() {
         }
       }
       
-      return processEncounterDetails(encounter, null, null);
+      return processEncounterDetails(encounter, hexInfo, null);
     }
     
     return null;
