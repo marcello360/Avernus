@@ -464,6 +464,8 @@ h1 {
   display: none;
   padding: 1rem;
   background: var(--main-bg);
+  max-height: none;
+  overflow: visible;
 }
 
 .card.expanded .card-body {
@@ -509,6 +511,26 @@ h1 {
   gap: 0.5rem;
   font-size: 0.95rem;
   cursor: pointer;
+}
+
+/* Hex direction indicators */
+.hex-direction {
+  display: inline-block;
+  min-width: 30px;
+  margin-right: 5px;
+  font-weight: bold;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+/* Distance section headers */
+.distance-header {
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  color: var(--button-bg);
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 3px;
 }
 
 /* Disabled state for weather dropdown */
