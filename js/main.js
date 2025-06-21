@@ -467,7 +467,8 @@ export async function initializeApp() {
       }
       
       // Handle location roll
-      const locationRoll = await rollForLocation();
+      const followingStyx = document.getElementById('followingStyxCheck').checked;
+      const locationRoll = await rollForLocation(followingStyx);
       if (locationRoll.message) {
         toastMessage += `<br>${locationRoll.message}`;
       }
@@ -488,7 +489,7 @@ export async function initializeApp() {
     }, 300); // Match animation duration
   }
   
-  async function rollForLocation() {
+  async function rollForLocation(followingStyx = false) {
     const hexSelect = document.getElementById('hexSelect');
     const currentHexId = hexSelect.value;
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
@@ -525,6 +526,26 @@ export async function initializeApp() {
     const dieMax = explorationMode ? 6 : 12;
     const roll = Math.floor(Math.random() * dieMax) + 1;
     let message = ``;
+    
+    if (followingStyx) {      
+      const riverLocations = hiddenLocations.filter(loc => loc.onriver === true);
+      
+      if (riverLocations.length > 0) {
+        for (const riverLocation of riverLocations) {
+          visibleLocationIds.push(riverLocation.id);
+          message += `Location revealed: ${riverLocation.locationname}\n`;
+        }
+        
+        localStorage.setItem(
+          `visibleLocations_${currentHex}`,
+          JSON.stringify(visibleLocationIds)
+        );
+        
+        renderLocations(locations);
+        
+        return { revealed: true, message };
+      }
+    }
     
     if (roll === 1 && hiddenLocations.length > 0) {
       const randomIndex = Math.floor(Math.random() * hiddenLocations.length);
