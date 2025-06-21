@@ -101,11 +101,11 @@ async function onHexChange() {
   }
 
   if (hexId && weatherSelect.value) {
-    const nearby = getNeighborHexes(hexName, weatherSelect.value);
-    const mountainData = await fetchMountainHexes(nearby);
-    const volcanoData = await fetchVolcanoHexes(nearby);
+    const neighborData = getNeighborHexes(hexName, weatherSelect.value);
+    const mountainData = await fetchMountainHexes(neighborData.hexList);
+    const volcanoData = await fetchVolcanoHexes(neighborData.hexList);
     
-    renderFeatureHexes(nearby, mountainData, volcanoData, weatherSelect.value);
+    renderFeatureHexes(neighborData, mountainData, volcanoData, weatherSelect.value);
     setTimeout(() => restoreCardStates(savedCardStates), 0);
   }
 }
@@ -118,12 +118,12 @@ async function onWeatherChange() {
   const savedCardStates = saveCardStates();
 
   if (hexName && weather) {
-    const nearby = getNeighborHexes(hexName, weather);
+    const neighborData = getNeighborHexes(hexName, weather);
     
-    const mountainData = await fetchMountainHexes(nearby);
-    const volcanoData = await fetchVolcanoHexes(nearby);
+    const mountainData = await fetchMountainHexes(neighborData.hexList);
+    const volcanoData = await fetchVolcanoHexes(neighborData.hexList);
     
-    renderFeatureHexes(nearby, mountainData, volcanoData, weather);
+    renderFeatureHexes(neighborData, mountainData, volcanoData, weather);
     
     const encounterContainer = document.getElementById('encounter-container');
     if (encounterContainer) {
