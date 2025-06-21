@@ -233,7 +233,6 @@ function populateEncounterCards(container, encounters) {
               const newResult = await rollForAllegiance(encounter.id);
               if (newResult) {
                 allegianceSection.innerHTML = `<strong>Allegiance:</strong> ${newResult}`;
-                showToast(`Allegiance rerolled: ${newResult}`);
               }
             } catch (error) {
               console.error('Error rerolling allegiance:', error);
