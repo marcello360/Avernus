@@ -421,20 +421,32 @@ export function renderTerrain(data) {
     });
   }
 
-export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, visibility) {
+export function renderFeatureHexes(neighborData, mountainHexes, volcanoHexes, visibility) {
     const radius = visibility === "clear" ? 2 : 1;
     
     const hexSelect = document.getElementById('hexSelect');
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
     const hexFeatures = {};
+    const hexDirections = {};
     const volcanoHexNames = ['H2', 'H6', 'I5'];
     
-    allNearbyHexes.forEach(hex => {
-      hexFeatures[hex] = [];
+    const nearHexes = [];
+    const farHexes = [];
+    
+    neighborData.hexWithDirections.forEach(item => {
+      hexFeatures[item.hex] = [];
+      hexDirections[item.hex] = item.direction;
+      
+      if (item.distance === "far") {
+        farHexes.push(item.hex);
+      } else {
+        nearHexes.push(item.hex);
+      }
     });
     
     if (currentHex && !hexFeatures[currentHex]) {
       hexFeatures[currentHex] = [];
+      hexDirections[currentHex] = 'Current';
     }
     
     mountainHexes.forEach(hex => {
@@ -456,7 +468,7 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
     }
     
     // Special case for C2: Pillar of Skulls
-    if (allNearbyHexes.includes('C2') || currentHex === 'C2') {
+    if (neighborData.hexList.includes('C2') || currentHex === 'C2') {
       hexFeatures['C2'] = hexFeatures['C2'] || [];
       if (!hexFeatures['C2'].includes('Pillar of Skulls')) {
         hexFeatures['C2'].push('Pillar of Skulls');
@@ -479,24 +491,88 @@ export function renderFeatureHexes(allNearbyHexes, mountainHexes, volcanoHexes, 
       }
     }
 
-    const hexesWithFeatures = Object.keys(hexFeatures)
-      .filter(hex => hexFeatures[hex].length > 0)
+    const nearHexesWithFeatures = Object.keys(hexFeatures)
+      .filter(hex => hexFeatures[hex].length > 0 && nearHexes.includes(hex))
       .map(hex => ({
         name: hex,
+        direction: hexDirections[hex],
         features: hexFeatures[hex]
       }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-    
-    let cardContent;
-    if (hexesWithFeatures.length > 0) {
-      const featuresList = hexesWithFeatures.map(h => 
-        `<li>${h.name}: ${h.features.join(", ")}</li>`).join('');
+      .sort((a, b) => {
+        const numA = parseInt(a.name.slice(1));
+        const numB = parseInt(b.name.slice(1));
         
-      cardContent = `
-        <ul class="features-list">
-          ${featuresList}
-        </ul>
-      `;
+        // Sort by number first
+        if (numA !== numB) {
+          return numA - numB;
+        }
+        
+        return a.name[0].localeCompare(b.name[0]);
+      });
+    
+    const farHexesWithFeatures = Object.keys(hexFeatures)
+      .filter(hex => hexFeatures[hex].length > 0 && farHexes.includes(hex))
+      .map(hex => ({
+        name: hex,
+        direction: hexDirections[hex],
+        features: hexFeatures[hex]
+      }))
+      .sort((a, b) => {
+        const numA = parseInt(a.name.slice(1));
+        const numB = parseInt(b.name.slice(1));
+        
+        // Sort by number first
+        if (numA !== numB) {
+          return numA - numB;
+        }
+        
+        return a.name[0].localeCompare(b.name[0]);
+      });
+      
+    const currentHexWithFeatures = Object.keys(hexFeatures)
+      .filter(hex => hex === currentHex && hexFeatures[hex].length > 0)
+      .map(hex => ({
+        name: hex,
+        direction: hexDirections[hex],
+        features: hexFeatures[hex]
+      }));
+    
+    if (currentHexWithFeatures.length > 0) {
+      nearHexesWithFeatures.unshift(...currentHexWithFeatures);
+    }
+      
+    let cardContent;
+    if (nearHexesWithFeatures.length > 0 || farHexesWithFeatures.length > 0) {
+      let nearList = '';
+      let farList = '';
+      
+      if (nearHexesWithFeatures.length > 0) {
+        nearList = nearHexesWithFeatures.map(h => 
+          `<li><span class="hex-direction">${h.direction}</span> ${h.name}: ${h.features.join(", ")}</li>`
+        ).join('');
+        
+        nearList = `
+          <div class="distance-header">Adjacent Hexes</div>
+          <ul class="features-list near-hexes">
+            ${nearList}
+          </ul>
+        `;
+      }
+      
+      if (farHexesWithFeatures.length > 0) {
+        farList = farHexesWithFeatures.map(h => 
+          `<li><span class="hex-direction">${h.direction}</span> ${h.name}: ${h.features.join(", ")}</li>`
+        ).join('');
+        
+        farList = `
+          <div class="distance-header">Distant Hexes</div>
+          <ul class="features-list far-hexes">
+            ${farList}
+          </ul>
+        `;
+      }
+      
+      cardContent = `${nearList}${farList}`;
     } else {
       cardContent = `<p class="empty-message">No nearby hexes visible</p>`;
     }
