@@ -609,22 +609,26 @@ export async function initializeApp() {
       message = `Encounter Roll: ${roll1}, ${roll2}`;
       
       if (roll1 === 1 && roll2 === 1) {
-        message = "New Encounter triggered (Double 1s)";
         const encounter1 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         const encounter2 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         if (encounter1 && encounter2) {
+          message = "Simultaneous Encounters triggered";
           return { hasEncounter: true, message, encounters: [encounter1, encounter2] };
+        } else if (watchType === "rest") {
+          return { hasEncounter: false, message };
         }
       } else if (roll1 === 1 || roll2 === 1) {
-        message = "New Encounter triggered";
         const encounter = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         if (encounter) {
+          message = "New Encounter triggered";
           return { hasEncounter: true, message, encounters: [encounter] };
+        } else if (watchType === "rest") {
+          return { hasEncounter: false, message };
         }
       } else if (roll1 === roll2) {
-        message = "New Encounter triggered";
         const encounter = await resolveSpecialEncounter();
         if (encounter) {
+          message = "New Encounter triggered";
           return { hasEncounter: true, message, encounters: [encounter] };
         }
       }
@@ -635,22 +639,26 @@ export async function initializeApp() {
       message = `Encounter Roll: ${roll1}, ${roll2}`;
       
       if (roll1 === 1 && roll2 === 1) {
-        message = "New Encounter triggered";
         const encounter1 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         const encounter2 = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         if (encounter1 && encounter2) {
+          message = "Simultaneous Encounters triggered";
           return { hasEncounter: true, message, encounters: [encounter1, encounter2] };
+        } else if (watchType === "rest") {
+          return { hasEncounter: false, message };
         }
       } else if (roll1 === 1 || roll2 === 1) {
-        message = "New Encounter triggered";
         const encounter = await resolveNormalEncounter(hexId, hexName, followingStyx, watchType);
         if (encounter) {
+          message = "New Encounter triggered";
           return { hasEncounter: true, message, encounters: [encounter] };
+        } else if (watchType === "rest") {
+          return { hasEncounter: false, message };
         }
       } else if (roll1 === roll2) {
-        message = "New Encounter triggered";
         const encounter = await resolveSpecialEncounter();
         if (encounter) {
+          message = "New Encounter triggered";
           return { hasEncounter: true, message, encounters: [encounter] };
         }
       }
