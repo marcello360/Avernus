@@ -69,10 +69,23 @@ async function onHexChange() {
     ]);
     
     const hexInfo = hexResponse && hexResponse.length > 0 ? hexResponse[0] : null;
+    const followingStyxCheck = document.getElementById('followingStyxCheck');
+    const followingPitCheck = document.getElementById('followingPitCheck');
+    
     if (hexInfo && hexInfo.hasstyx === false) {
-      const followingStyxCheck = document.getElementById('followingStyxCheck');
       followingStyxCheck.checked = false;
-      localStorage.setItem('followingStyxChecked', false);
+      followingStyxCheck.disabled = true;
+      localStorage.setItem('followingStyxChecked', 'false');
+    } else if (hexInfo) {
+      followingStyxCheck.disabled = false;
+    }
+    
+    if (hexInfo && hexInfo.hasshummrath === false) {
+      followingPitCheck.checked = false;
+      followingPitCheck.disabled = true;
+      localStorage.setItem('followingPitChecked', 'false');
+    } else if (hexInfo) {
+      followingPitCheck.disabled = false;
     }
     
     currentTerrainData = terrainData;
