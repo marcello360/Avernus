@@ -524,6 +524,11 @@ export async function initializeApp() {
   }
   
   async function rollForLocation(followingStyx = false, followingPit = false) {
+    const watchType = document.getElementById('watchSelect').value.toLowerCase();
+    if (watchType === 'rest') {
+      return { revealed: false, message: '' };
+    }
+    
     const hexSelect = document.getElementById('hexSelect');
     const currentHexId = hexSelect.value;
     const currentHex = hexSelect.options[hexSelect.selectedIndex]?.textContent;
