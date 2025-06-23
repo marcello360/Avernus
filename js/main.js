@@ -759,16 +759,14 @@ export async function initializeApp() {
       if (d30Roll === 30) {
         const d8Roll = Math.floor(Math.random() * 8) + 1;
         const faction = await fetchFactionByRange(d8Roll, d8Roll, 1); // Type 1 = factions
-        
         if (faction) {
-          encounter = {
-            ...encounter,
-            title: `${encounter.title} (${faction.title})`,
-            description: `${encounter.description}\n\nFaction: ${faction.description}`
+          encounter[0] = {
+            ...encounter[0],
+            encountername: `${encounter[0].encountername} (${faction[0].factionname})`,
+            encounterdescription: `${encounter[0].encounterdescription}\n\nElturel Faction: ${faction[0].factionname}`
           };
         }
       }
-      
       return processEncounterDetails(encounter, hexInfo, null);
     }
     
